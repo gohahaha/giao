@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>生成 Favicon</title>
+</head>
+<body>
+    <canvas id="canvas" width="32" height="32"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 绘制房子 emoji
+        ctx.font = '28px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🏠', 16, 18);
+
+        // 转换为图片
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.href = canvas.toDataURL();
+        document.head.appendChild(link);
+
+        // 下载按钮
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL();
+        a.download = 'favicon.png';
+        a.textContent = '下载 Favicon';
+        document.body.appendChild(a);
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>米奇giaogiao屋 | 我们的专属小窝</title>
+    <meta name="description" content="米奇giaogiao屋 - 十人专属私密回忆空间站">
+    <meta name="theme-color" content="#F5E6D3">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 星星背景 -->
+    <div class="stars-bg" id="starsBg"></div>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" onclick="showSection('home')">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">米奇giaogiao屋</span>
+            </div>
+            <button class="nav-toggle" id="navToggle" onclick="toggleNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link active" data-section="home" onclick="showSection('home')">🏠 首页</a></li>
+                <li><a href="#feed" class="nav-link" data-section="feed" onclick="showSection('feed')">💬 日常圈</a></li>
+                <li><a href="#album" class="nav-link" data-section="album" onclick="showSection('album')">📸 群相册</a></li>
+                <li><a href="#members" class="nav-link" data-section="members" onclick="showSection('members')">👥 成员档案</a></li>
+                <li><a href="#timeline" class="nav-link" data-section="timeline" onclick="showSection('timeline')">⏳ 时光轴</a></li>
+                <li><a href="#board" class="nav-link" data-section="board" onclick="showSection('board')">📝 碎碎念</a></li>
+                <li><a href="#about" class="nav-link" data-section="about" onclick="showSection('about')">💖 关于我们</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主内容区域（动态填充） -->
+    <main class="main-content" id="mainContent">
+        <!-- JavaScript 将根据登录状态动态填充内容 -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-spinner"></div>
+            <p>加载中...</p>
+        </div>
+    </main>
+
+    <!-- 底部 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>🏠 米奇giaogiao屋 · 我们的专属小窝</p>
+            <p class="footer-sub">十人岁岁年年，碎碎念念皆珍藏 ❤️</p>
+        </div>
+    </footer>
+
+    <!-- 提示消息 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <!-- 配置文件 -->
+    <script src="js/supabase-config.js"></script>
+
+    <!-- 应用脚本 -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/album.js"></script>
+    <script src="js/members.js"></script>
+    <script src="js/timeline.js"></script>
+    <script src="js/board.js"></script>
+</body>
+</html>
