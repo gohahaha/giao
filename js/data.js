@@ -192,7 +192,12 @@ class DataStore {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            if (!posts || posts.length === 0) return [];
+
+            // 云端为空但有本地数据时，先返回本地数据
+            if ((!posts || posts.length === 0)) {
+                const localFeed = this.getLocalFeed();
+                if (localFeed.length > 0) return localFeed;
+            }
 
             const postIds = posts.map(p => p.id);
 
@@ -381,6 +386,12 @@ class DataStore {
 
             if (error) throw error;
 
+            // 云端为空但有本地数据时，先返回本地数据
+            if ((!data || data.length === 0)) {
+                const localAlbum = this.getLocalAlbum();
+                if (localAlbum.length > 0) return localAlbum;
+            }
+
             return (data || []).map(photo => ({
                 id: photo.id,
                 authorId: photo.author_id,
@@ -461,6 +472,12 @@ class DataStore {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
+
+            // 云端为空但有本地数据时，先返回本地数据
+            if ((!data || data.length === 0)) {
+                const localBoard = this.getLocalBoard();
+                if (localBoard.length > 0) return localBoard;
+            }
 
             return (data || []).map(msg => ({
                 id: msg.id,
