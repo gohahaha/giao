@@ -333,19 +333,38 @@ class DataStore {
         }
     }
 
-    async deleteFeed(feedId) {
-        if (!this.useCloud) return this.deleteLocalFeed(feedId);
+    async deleteFeed(feedId, authorId) {
+        if (!this.useCloud) return this.deleteLocalFeed(feedId, authorId);
 
         try {
             const { error } = await supabaseClient
                 .from('posts')
                 .delete()
-                .eq('id', feedId);
+                .eq('id', feedId)
+                .eq('author_id', authorId);
 
             if (error) throw error;
         } catch (err) {
             console.error('deleteFeed 云端失败，降级到本地:', err.message);
-            this.deleteLocalFeed(feedId);
+            this.deleteLocalFeed(feedId, authorId);
+        }
+    }
+
+    async updateFeed(feedId, authorId, newContent) {
+        if (!this.useCloud) return this.updateLocalFeed(feedId, authorId, newContent);
+
+        try {
+            const { error } = await supabaseClient
+                .from('posts')
+                .update({ content: newContent })
+                .eq('id', feedId)
+                .eq('author_id', authorId);
+
+            if (error) throw error;
+            return true;
+        } catch (err) {
+            console.error('updateFeed 云端失败，降级到本地:', err.message);
+            return this.updateLocalFeed(feedId, authorId, newContent);
         }
     }
 
@@ -413,19 +432,20 @@ class DataStore {
         }
     }
 
-    async deleteAlbumPhoto(photoId) {
-        if (!this.useCloud) return this.deleteLocalPhoto(photoId);
+    async deleteAlbumPhoto(photoId, authorId) {
+        if (!this.useCloud) return this.deleteLocalPhoto(photoId, authorId);
 
         try {
             const { error } = await supabaseClient
                 .from('photos')
                 .delete()
-                .eq('id', photoId);
+                .eq('id', photoId)
+                .eq('author_id', authorId);
 
             if (error) throw error;
         } catch (err) {
             console.error('deleteAlbumPhoto 云端失败，降级到本地:', err.message);
-            this.deleteLocalPhoto(photoId);
+            this.deleteLocalPhoto(photoId, authorId);
         }
     }
 
@@ -481,19 +501,38 @@ class DataStore {
         }
     }
 
-    async deleteBoard(boardId) {
-        if (!this.useCloud) return this.deleteLocalBoard(boardId);
+    async deleteBoard(boardId, authorId) {
+        if (!this.useCloud) return this.deleteLocalBoard(boardId, authorId);
 
         try {
             const { error } = await supabaseClient
                 .from('messages')
                 .delete()
-                .eq('id', boardId);
+                .eq('id', boardId)
+                .eq('author_id', authorId);
 
             if (error) throw error;
         } catch (err) {
             console.error('deleteBoard 云端失败，降级到本地:', err.message);
-            this.deleteLocalBoard(boardId);
+            this.deleteLocalBoard(boardId, authorId);
+        }
+    }
+
+    async updateBoard(boardId, authorId, newContent) {
+        if (!this.useCloud) return this.updateLocalBoard(boardId, authorId, newContent);
+
+        try {
+            const { error } = await supabaseClient
+                .from('messages')
+                .update({ content: newContent })
+                .eq('id', boardId)
+                .eq('author_id', authorId);
+
+            if (error) throw error;
+            return true;
+        } catch (err) {
+            console.error('updateBoard 云端失败，降级到本地:', err.message);
+            return this.updateLocalBoard(boardId, authorId, newContent);
         }
     }
 
@@ -654,9 +693,20 @@ class DataStore {
         return comment;
     }
 
-    deleteLocalFeed(feedId) {
-        const feed = this.getLocalFeed().filter(f => f.id !== feedId);
+    deleteLocalFeed(feedId, authorId) {
+        const feed = this.getLocalFeed().filter(f => !(f.id === feedId && f.authorId === authorId));
         localStorage.setItem('house_feed', JSON.stringify(feed));
+    }
+
+    updateLocalFeed(feedId, authorId, newContent) {
+        const feed = this.getLocalFeed();
+        const post = feed.find(f => f.id === feedId && f.authorId === authorId);
+        if (post) {
+            post.content = newContent;
+            localStorage.setItem('house_feed', JSON.stringify(feed));
+            return true;
+        }
+        return false;
     }
 
     getLocalAlbum() {
@@ -673,8 +723,8 @@ class DataStore {
         return photo;
     }
 
-    deleteLocalPhoto(photoId) {
-        const album = this.getLocalAlbum().filter(a => a.id !== photoId);
+    deleteLocalPhoto(photoId, authorId) {
+        const album = this.getLocalAlbum().filter(a => !(a.id === photoId && a.authorId === authorId));
         localStorage.setItem('house_album', JSON.stringify(album));
     }
 
@@ -692,9 +742,20 @@ class DataStore {
         return message;
     }
 
-    deleteLocalBoard(boardId) {
-        const board = this.getLocalBoard().filter(b => b.id !== boardId);
+    deleteLocalBoard(boardId, authorId) {
+        const board = this.getLocalBoard().filter(b => !(b.id === boardId && b.authorId === authorId));
         localStorage.setItem('house_board', JSON.stringify(board));
+    }
+
+    updateLocalBoard(boardId, authorId, newContent) {
+        const board = this.getLocalBoard();
+        const msg = board.find(b => b.id === boardId && b.authorId === authorId);
+        if (msg) {
+            msg.content = newContent;
+            localStorage.setItem('house_board', JSON.stringify(board));
+            return true;
+        }
+        return false;
     }
 
     // ==================== 初始化本地种子数据（首次使用时自动填充）====================

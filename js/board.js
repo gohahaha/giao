@@ -48,3 +48,42 @@ async function submitBoard() {
     if (currentSection === 'home') await loadHomePage();
     else if (currentSection === 'board') await loadBoard();
 }
+
+// ==================== 编辑留言 ====================
+let editingBoardId = null;
+
+function editBoardMsg(boardId) {
+    editingBoardId = boardId;
+    dataStore.getBoard().then(board => {
+        const msg = board.find(b => b.id === boardId);
+        if (!msg || msg.authorId !== currentMemberId) {
+            showToast('只能编辑自己的留言');
+            return;
+        }
+        document.getElementById('editBoardContent').value = msg.content;
+        openModal('editBoardModal');
+    });
+}
+
+async function submitEditBoard() {
+    const content = document.getElementById('editBoardContent').value.trim();
+    if (!content) { showToast('请输入内容～'); return; }
+
+    await dataStore.updateBoard(editingBoardId, currentMemberId, content);
+    closeModal('editBoardModal');
+    showToast('修改成功！');
+    editingBoardId = null;
+
+    if (currentSection === 'home') await loadHomePage();
+    else if (currentSection === 'board') await loadBoard();
+}
+
+// ==================== 删除留言 ====================
+async function deleteBoardMsg(boardId) {
+    if (confirm('确定要删除这条留言吗？')) {
+        await dataStore.deleteBoard(boardId, currentMemberId);
+        showToast('已删除');
+        if (currentSection === 'home') await loadHomePage();
+        else if (currentSection === 'board') await loadBoard();
+    }
+}

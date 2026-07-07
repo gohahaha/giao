@@ -112,3 +112,13 @@ async function submitAlbum() {
     if (currentSection === 'home') await loadHomePage();
     else if (currentSection === 'album') await loadAlbum();
 }
+
+// ==================== 删除照片 ====================
+async function deleteAlbumPhoto(photoId) {
+    if (confirm('确定要删除这张照片吗？')) {
+        await dataStore.deleteAlbumPhoto(photoId, currentMemberId);
+        showToast('已删除');
+        if (currentSection === 'home') await loadHomePage();
+        else if (currentSection === 'album') await loadAlbum();
+    }
+}

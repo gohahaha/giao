@@ -1161,9 +1161,49 @@ body {
     font-size: 0.85rem;
 }
 
+.board-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.board-owner-actions {
+    display: flex;
+    gap: 2px;
+}
+
+.board-owner-actions .feed-action {
+    padding: 2px 6px;
+    font-size: 0.8rem;
+}
+
 .board-time {
     font-size: 0.75rem;
     color: var(--text-muted);
+}
+
+/* 相册删除按钮 */
+.album-delete-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.album-delete-btn:hover {
+    background: var(--accent);
 }
 
 /* ==================== 关于页面 ==================== */

@@ -335,6 +335,36 @@ function rebuildModals() {
             </div>
         </div>
 
+        <!-- 编辑动态弹窗 -->
+        <div class="modal" id="editPostModal">
+            <div class="modal-overlay" onclick="closeModal('editPostModal')"></div>
+            <div class="modal-content">
+                <div class="modal-header"><h3>✏️ 编辑动态</h3><button class="modal-close" onclick="closeModal('editPostModal')">✕</button></div>
+                <div class="modal-body">
+                    <textarea id="editPostContent" placeholder="修改你的动态..." rows="5"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeModal('editPostModal')">取消</button>
+                    <button class="btn-primary" onclick="submitEditPost()">保存修改</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 编辑留言弹窗 -->
+        <div class="modal" id="editBoardModal">
+            <div class="modal-overlay" onclick="closeModal('editBoardModal')"></div>
+            <div class="modal-content">
+                <div class="modal-header"><h3>✏️ 编辑碎碎念</h3><button class="modal-close" onclick="closeModal('editBoardModal')">✕</button></div>
+                <div class="modal-body">
+                    <textarea id="editBoardContent" placeholder="修改你的留言..." rows="5"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeModal('editBoardModal')">取消</button>
+                    <button class="btn-primary" onclick="submitEditBoard()">保存修改</button>
+                </div>
+            </div>
+        </div>
+
         <!-- 评论弹窗 -->
         <div class="modal" id="commentModal">
             <div class="modal-overlay" onclick="closeModal('commentModal')"></div>
@@ -587,7 +617,7 @@ function createFeedCard(post, isPreview = false) {
                     <button class="feed-action" onclick="openComments(${post.id})">
                         💬 <span class="count">${post.comments.length}</span>
                     </button>
-                    ${isOwner ? `<button class="feed-action" onclick="deleteFeedPost(${post.id})">🗑️</button>` : ''}
+                    ${isOwner ? `<button class="feed-action" onclick="editFeedPost(${post.id})">✏️</button><button class="feed-action" onclick="deleteFeedPost(${post.id})">🗑️</button>` : ''}
                 </div>
             ` : ''}
         </div>
@@ -597,10 +627,12 @@ function createFeedCard(post, isPreview = false) {
 // 创建相册项
 function createAlbumItem(photo) {
     const member = getMember(photo.authorId);
+    const isOwner = photo.authorId === currentMemberId;
     return `
-        <div class="album-item" onclick="openImageViewer('${photo.image}', '${member.name}', '${formatTime(photo.time)}')">
-            <img src="${photo.image}" alt="${photo.desc || '照片'}" loading="lazy">
-            <div class="album-item-overlay">
+        <div class="album-item">
+            <img src="${photo.image}" alt="${photo.desc || '照片'}" loading="lazy" onclick="openImageViewer('${photo.image}', '${member.name}', '${formatTime(photo.time)}')">
+            ${isOwner ? `<button class="album-delete-btn" onclick="event.stopPropagation();deleteAlbumPhoto(${photo.id})" title="删除照片">✕</button>` : ''}
+            <div class="album-item-overlay" onclick="openImageViewer('${photo.image}', '${member.name}', '${formatTime(photo.time)}')">
                 <div class="album-item-author">${getMemberAvatarHTML(member)} ${member.name}</div>
                 <div class="album-item-date">${formatTime(photo.time)}</div>
             </div>
@@ -624,6 +656,7 @@ function createMemberCard(member) {
 // 创建留言卡片
 function createBoardCard(message) {
     const member = getMember(message.authorId);
+    const isOwner = message.authorId === currentMemberId;
     return `
         <div class="board-card" data-id="${message.id}">
             <div class="board-content">${escapeHtml(message.content)}</div>
@@ -632,7 +665,13 @@ function createBoardCard(message) {
                     <div class="board-avatar">${getMemberAvatarHTML(member)}</div>
                     <div class="board-name">${member.name}</div>
                 </div>
-                <div class="board-time">${formatTime(message.time)}</div>
+                <div class="board-actions">
+                    <div class="board-time">${formatTime(message.time)}</div>
+                    ${isOwner ? `<div class="board-owner-actions">
+                        <button class="feed-action" onclick="editBoardMsg(${message.id})">✏️</button>
+                        <button class="feed-action" onclick="deleteBoardMsg(${message.id})">🗑️</button>
+                    </div>` : ''}
+                </div>
             </div>
         </div>
     `;
@@ -794,11 +833,41 @@ async function toggleLike(feedId) {
 
 async function deleteFeedPost(feedId) {
     if (confirm('确定要删除这条动态吗？')) {
-        await dataStore.deleteFeed(feedId);
+        await dataStore.deleteFeed(feedId, currentMemberId);
         showToast('已删除');
         if (currentSection === 'home') await loadHomePage();
         else await loadFeed();
     }
+}
+
+// ==================== 编辑动态 ====================
+let editingFeedId = null;
+
+function editFeedPost(feedId) {
+    editingFeedId = feedId;
+    // 从当前页面找到动态内容
+    dataStore.getFeed().then(feed => {
+        const post = feed.find(f => f.id === feedId);
+        if (!post || post.authorId !== currentMemberId) {
+            showToast('只能编辑自己的动态');
+            return;
+        }
+        document.getElementById('editPostContent').value = post.content;
+        openModal('editPostModal');
+    });
+}
+
+async function submitEditPost() {
+    const content = document.getElementById('editPostContent').value.trim();
+    if (!content) { showToast('请输入内容～'); return; }
+
+    await dataStore.updateFeed(editingFeedId, currentMemberId, content);
+    closeModal('editPostModal');
+    showToast('修改成功！');
+    editingFeedId = null;
+
+    if (currentSection === 'home') await loadHomePage();
+    else if (currentSection === 'feed') await loadFeed();
 }
 
 // ==================== 评论功能 ====================
