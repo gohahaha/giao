@@ -591,8 +591,8 @@ function closeModal(modalId) {
 // 创建动态卡片
 function createFeedCard(post, isPreview = false) {
     const member = getMember(post.authorId);
-    const isLiked = post.likes.includes(currentMemberId);
-    const isOwner = post.authorId === currentMemberId;
+    const isLiked = post.likes.map(Number).includes(Number(currentMemberId));
+    const isOwner = Number(post.authorId) === Number(currentMemberId);
 
     return `
         <div class="feed-card" data-id="${post.id}">
@@ -627,7 +627,7 @@ function createFeedCard(post, isPreview = false) {
 // 创建相册项
 function createAlbumItem(photo) {
     const member = getMember(photo.authorId);
-    const isOwner = photo.authorId === currentMemberId;
+    const isOwner = Number(photo.authorId) === Number(currentMemberId);
     return `
         <div class="album-item">
             <img src="${photo.image}" alt="${photo.desc || '照片'}" loading="lazy" onclick="openImageViewer('${photo.image}', '${member.name}', '${formatTime(photo.time)}')">
@@ -656,7 +656,7 @@ function createMemberCard(member) {
 // 创建留言卡片
 function createBoardCard(message) {
     const member = getMember(message.authorId);
-    const isOwner = message.authorId === currentMemberId;
+    const isOwner = Number(message.authorId) === Number(currentMemberId);
     return `
         <div class="board-card" data-id="${message.id}">
             <div class="board-content">${escapeHtml(message.content)}</div>
