@@ -656,6 +656,7 @@ function createMemberCard(member) {
 // 创建留言卡片
 function createBoardCard(message) {
     const member = getMember(message.authorId);
+    console.log('BoardCard:', { msgAuthorId: message.authorId, currentMemberId, isOwner: Number(message.authorId) === Number(currentMemberId) });
     const isOwner = Number(message.authorId) === Number(currentMemberId);
     return `
         <div class="board-card" data-id="${message.id}">
