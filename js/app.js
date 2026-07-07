@@ -2,213 +2,98 @@
 
 // 当前状态
 let currentSection = 'home';
-let currentUser = null;        // Supabase 用户对象
 let currentMemberId = 0;       // 对应 MEMBERS 数组的 id
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', async () => {
     initStars();
 
-    // 检查 Supabase 是否配置
-    if (!isSupabaseConfigured) {
-        showSetupGuide();
-        return;
+    // 检查是否已有本地登录状态
+    const savedMemberId = localStorage.getItem('house_current_member');
+    if (savedMemberId) {
+        currentMemberId = parseInt(savedMemberId);
+        const member = MEMBERS.find(m => m.id === currentMemberId);
+        if (member) {
+            await onUserLoggedIn();
+            return;
+        }
     }
 
-    // 初始化数据层
-    await dataStore.init();
-
-    // 检查登录状态
-    currentUser = await dataStore.getCurrentUser();
-    if (currentUser) {
-        currentMemberId = await dataStore.getCurrentMemberId();
-        await onUserLoggedIn();
-    } else {
-        showAuthPage();
-    }
+    // 显示登录页面
+    showAuthPage();
 });
-
-// ==================== Supabase 未配置引导 ====================
-function showSetupGuide() {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    const mainContent = document.querySelector('.main-content');
-    mainContent.innerHTML = `
-        <div class="auth-container">
-            <div class="auth-card setup-card">
-                <div class="auth-logo">🏠</div>
-                <h2>欢迎来到米奇giaogiao屋</h2>
-                <p class="setup-desc">看起来你还没有配置 Supabase，跟我来做：</p>
-                <div class="setup-steps">
-                    <div class="setup-step">
-                        <span class="step-num">1</span>
-                        <div>
-                            <strong>注册 Supabase</strong>
-                            <p>打开 <a href="https://app.supabase.com" target="_blank">app.supabase.com</a>，用 GitHub 登录，创建一个免费项目</p>
-                        </div>
-                    </div>
-                    <div class="setup-step">
-                        <span class="step-num">2</span>
-                        <div>
-                            <strong>复制 API 密钥</strong>
-                            <p>进入 Settings → API，复制 <code>Project URL</code> 和 <code>anon public key</code></p>
-                        </div>
-                    </div>
-                    <div class="setup-step">
-                        <span class="step-num">3</span>
-                        <div>
-                            <strong>填写配置</strong>
-                            <p>打开 <code>js/supabase-config.js</code>，把两个值粘贴进去</p>
-                        </div>
-                    </div>
-                    <div class="setup-step">
-                        <span class="step-num">4</span>
-                        <div>
-                            <strong>创建数据库</strong>
-                            <p>在 Supabase SQL Editor 中运行 <code>supabase-setup.sql</code> 的内容</p>
-                        </div>
-                    </div>
-                    <div class="setup-step">
-                        <span class="step-num">5</span>
-                        <div>
-                            <strong>刷新页面</strong>
-                            <p>完成以上步骤后刷新，就能看到注册登录页面了！</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
 
 // ==================== 认证页面 ====================
 function showAuthPage() {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
 
-    // 临时隐藏主导航和内容
-    const hero = document.querySelector('.hero');
-    const sectionContainers = document.querySelectorAll('.section-container');
-
     document.querySelector('.main-content').innerHTML = `
         <div class="auth-container" id="authContainer">
             <div class="auth-card" id="authCard">
                 <div class="auth-logo">🏠</div>
-                <h2 class="auth-title" id="authTitle">欢迎回家</h2>
+                <h2 class="auth-title">欢迎回家</h2>
                 <p class="auth-subtitle">米奇giaogiao屋 · 我们的专属小窝</p>
 
                 <!-- 登录表单 -->
                 <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label>📧 邮箱</label>
-                        <input type="email" id="loginEmail" placeholder="输入你的邮箱" required>
+                        <label>👤 选择你的身份</label>
+                        <select id="loginMember" required>
+                            <option value="">-- 我是谁？ --</option>
+                            ${MEMBERS.map(m => `<option value="${m.id}">${m.name}（${m.role}）</option>`).join('')}
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>🔒 密码</label>
-                        <input type="password" id="loginPassword" placeholder="输入密码" required minlength="6">
+                        <input type="password" id="loginPassword" placeholder="输入8位数字密码" required maxlength="8" pattern="[0-9]{8}" inputmode="numeric" autocomplete="off">
+                        <p class="form-hint">💡 密码就是你的账号，格式：2026 + 生日（月日各两位）<br>例如：1月7日生日 → 密码为 20260107</p>
                     </div>
                     <button type="submit" class="btn-primary btn-full" id="loginBtn">
-                        <span id="loginBtnText">登录</span>
+                        <span id="loginBtnText">🏠 进入小屋</span>
                         <span class="loading-spinner-inline" id="loginSpinner" style="display:none"></span>
                     </button>
                 </form>
-
-                <!-- 注册表单 -->
-                <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)" style="display:none;">
-                    <div class="form-group">
-                        <label>📧 邮箱</label>
-                        <input type="email" id="regEmail" placeholder="输入你的邮箱" required>
-                    </div>
-                    <div class="form-group">
-                        <label>🔒 密码 (至少6位)</label>
-                        <input type="password" id="regPassword" placeholder="设置密码" required minlength="6">
-                    </div>
-                    <div class="form-group">
-                        <label>👤 你是哪位成员？</label>
-                        <select id="regMember" required>
-                            <option value="">-- 选择你自己 --</option>
-                            ${MEMBERS.map(m => `<option value="${m.id}">${m.emoji} ${m.name} - ${m.title}</option>`).join('')}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn-primary btn-full" id="regBtn">
-                        <span id="regBtnText">注册加入小屋</span>
-                        <span class="loading-spinner-inline" id="regSpinner" style="display:none"></span>
-                    </button>
-                </form>
-
-                <div class="auth-switch">
-                    <span id="switchText">还没有账号？</span>
-                    <a href="javascript:void(0)" id="switchLink" onclick="toggleAuthForm()">注册加入</a>
-                </div>
             </div>
         </div>
     `;
-
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('authTitle').textContent = '欢迎回家';
-    document.getElementById('switchText').textContent = '还没有账号？';
-    document.getElementById('switchLink').textContent = '注册加入';
-}
-
-let isLoginMode = true;
-
-function toggleAuthForm() {
-    isLoginMode = !isLoginMode;
-    document.getElementById('loginForm').style.display = isLoginMode ? 'block' : 'none';
-    document.getElementById('registerForm').style.display = isLoginMode ? 'none' : 'block';
-    document.getElementById('authTitle').textContent = isLoginMode ? '欢迎回家' : '加入小屋';
-    document.getElementById('switchText').textContent = isLoginMode ? '还没有账号？' : '已有账号？';
-    document.getElementById('switchLink').textContent = isLoginMode ? '注册加入' : '去登录';
 }
 
 async function handleLogin(e) {
     e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-
-    setAuthLoading(true, 'login');
-    try {
-        await dataStore.signIn(email, password);
-        currentUser = await dataStore.getCurrentUser();
-        currentMemberId = await dataStore.getCurrentMemberId();
-        await onUserLoggedIn();
-    } catch (err) {
-        setAuthLoading(false, 'login');
-        if (err.message.includes('Invalid login credentials')) {
-            showToast('邮箱或密码错误，请重试');
-        } else if (err.message.includes('Email not confirmed')) {
-            showToast('请先点击邮件中的确认链接验证邮箱');
-        } else {
-            showToast('登录失败：' + err.message);
-        }
-    }
-}
-
-async function handleRegister(e) {
-    e.preventDefault();
-    const email = document.getElementById('regEmail').value.trim();
-    const password = document.getElementById('regPassword').value;
-    const memberId = parseInt(document.getElementById('regMember').value);
+    const memberId = parseInt(document.getElementById('loginMember').value);
+    const password = document.getElementById('loginPassword').value.trim();
 
     if (!memberId) {
-        showToast('请选择你是哪位成员');
+        showToast('请选择你的身份～');
         return;
     }
 
-    setAuthLoading(true, 'reg');
-    try {
-        await dataStore.signUp(email, password, memberId);
-        currentUser = await dataStore.getCurrentUser();
-        currentMemberId = await dataStore.getCurrentMemberId();
-        await onUserLoggedIn();
-        showToast('注册成功！欢迎加入小屋 🎉');
-    } catch (err) {
-        setAuthLoading(false, 'reg');
-        if (err.message.includes('already registered')) {
-            showToast('这个邮箱已经注册过了，请直接登录');
-        } else {
-            showToast('注册失败：' + err.message);
-        }
+    if (!password || password.length !== 8) {
+        showToast('请输入8位数字密码～');
+        return;
     }
+
+    // 本地验证
+    if (!verifyLogin(memberId, password)) {
+        const member = MEMBERS.find(m => m.id === memberId);
+        if (member) {
+            showToast('密码错误！提示：密码 = 2026 + 你的生日（月日各两位）');
+        } else {
+            showToast('成员不存在！');
+        }
+        return;
+    }
+
+    setAuthLoading(true, 'login');
+
+    // 模拟一个小延迟让用户感受到验证过程
+    await new Promise(r => setTimeout(r, 400));
+
+    currentMemberId = memberId;
+    localStorage.setItem('house_current_member', currentMemberId);
+
+    setAuthLoading(false, 'login');
+    await onUserLoggedIn();
 }
 
 function setAuthLoading(loading, form) {
@@ -216,18 +101,29 @@ function setAuthLoading(loading, form) {
     const spinner = document.getElementById(form === 'login' ? 'loginSpinner' : 'regSpinner');
     const btn = document.getElementById(form === 'login' ? 'loginBtn' : 'regBtn');
 
-    if (loading) {
-        btnText.style.display = 'none';
-        spinner.style.display = 'inline-block';
-        btn.disabled = true;
-    } else {
-        btnText.style.display = 'inline';
-        spinner.style.display = 'none';
-        btn.disabled = false;
+    if (btnText && spinner && btn) {
+        if (loading) {
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            btn.disabled = true;
+        } else {
+            btnText.style.display = 'inline';
+            spinner.style.display = 'none';
+            btn.disabled = false;
+        }
     }
 }
 
 async function onUserLoggedIn() {
+    // 确保成员有效
+    const member = MEMBERS.find(m => m.id === currentMemberId);
+    if (!member) {
+        localStorage.removeItem('house_current_member');
+        currentMemberId = 0;
+        showAuthPage();
+        return;
+    }
+
     // 重建主内容区和弹窗
     rebuildMainContent();
     rebuildModals();
@@ -236,14 +132,14 @@ async function onUserLoggedIn() {
     const authContainer = document.getElementById('authContainer');
     if (authContainer) authContainer.remove();
 
+    // 初始化本地种子数据（仅在本地模式下首次使用）
+    dataStore.initLocalSeedData();
+
     // 初始化导航
     initNavigation();
     updateUserMenu();
 
-    // 播种种子数据（仅在数据库为空时）
-    await dataStore.seedSampleData();
-
-    // 加载首页
+    // 首页
     loadHomePage();
 }
 
@@ -256,9 +152,9 @@ function rebuildMainContent() {
                 <div class="hero-content">
                     <h1 class="hero-title">米奇giaogiao屋</h1>
                     <p class="hero-subtitle">我们的专属小窝</p>
-                    <p class="hero-desc">十人岁岁年年，碎碎念念皆珍藏</p>
+                    <p class="hero-desc">十二人岁岁年年，碎碎念念皆珍藏</p>
                     <div class="hero-hearts">
-                        <span>❤️</span><span>🧡</span><span>💛</span><span>💚</span><span>💙</span>
+                        <span>❤️</span><span>🧡</span><span>💛</span><span>💚</span><span>💙</span><span>💜</span>
                     </div>
                 </div>
             </div>
@@ -301,7 +197,7 @@ function rebuildMainContent() {
         <!-- ==================== 成员档案 ==================== -->
         <section id="members" class="section">
             <div class="section-container">
-                <div class="section-header"><h2>👥 小屋成员档案</h2><p class="section-desc">我们的专属花名册</p></div>
+                <div class="section-header"><h2>👥 小屋成员档案</h2><p class="section-desc">十二位家人的专属花名册</p></div>
                 <div class="members-grid" id="membersGrid"></div>
             </div>
         </section>
@@ -332,10 +228,10 @@ function rebuildMainContent() {
                 <div class="about-page">
                     <div class="about-header"><h1>💖 关于米奇giaogiao屋</h1></div>
                     <div class="about-content">
-                        <div class="about-quote"><p>米奇giaogiao屋，一个十人小团体，无关热闹，只关偏爱，记录岁岁年年的陪伴，珍藏所有不被辜负的日常。</p></div>
+                        <div class="about-quote"><p>米奇giaogiao屋，一个十二人小团体，无关热闹，只关偏爱，记录岁岁年年的陪伴，珍藏所有不被辜负的日常。</p></div>
                         <div class="about-info">
                             <div class="info-card"><span class="info-icon">🏠</span><h3>小屋名称</h3><p>米奇giaogiao屋</p></div>
-                            <div class="info-card"><span class="info-icon">👥</span><h3>成员人数</h3><p>10位家人</p></div>
+                            <div class="info-card"><span class="info-icon">👥</span><h3>成员人数</h3><p>12位家人</p></div>
                             <div class="info-card"><span class="info-icon">📅</span><h3>建群时间</h3><p id="groupDate">2024-01-01</p></div>
                             <div class="info-card"><span class="info-icon">🎯</span><h3>我们的口号</h3><p id="groupSlogan">无关热闹，只关偏爱</p></div>
                         </div>
@@ -346,11 +242,14 @@ function rebuildMainContent() {
         </section>
     `;
 
-    // 重建弹窗（简化版，不需要作者选择）
+    // 重建弹窗
     rebuildModals();
 }
 
 function rebuildModals() {
+    // 移除旧弹窗
+    document.querySelectorAll('.modal').forEach(m => m.remove());
+
     const modalContainer = document.createElement('div');
     modalContainer.innerHTML = `
         <!-- 发动态弹窗 -->
@@ -456,11 +355,6 @@ function rebuildModals() {
     while (modalContainer.children.length > 0) {
         document.body.appendChild(modalContainer.children[0]);
     }
-
-    // 清理旧的弹窗（如果存在）
-    document.querySelectorAll('.modal').forEach(m => {
-        // 通过检查是否是新添加的来判断，简单处理：不移除
-    });
 }
 
 function updateUserMenu() {
@@ -473,7 +367,7 @@ function updateUserMenu() {
     const userMenu = document.createElement('div');
     userMenu.className = 'nav-user-menu';
     userMenu.innerHTML = `
-        <span class="nav-user-avatar">${member.emoji}</span>
+        ${getMemberAvatarHTML(member)}
         <span class="nav-user-name">${member.name}</span>
         <button class="btn-logout" onclick="handleLogout()" title="退出登录">🚪</button>
     `;
@@ -482,8 +376,7 @@ function updateUserMenu() {
 
 async function handleLogout() {
     if (confirm('确定要退出登录吗？')) {
-        await dataStore.signOut();
-        currentUser = null;
+        localStorage.removeItem('house_current_member');
         currentMemberId = 0;
         location.reload();
     }
@@ -599,7 +492,7 @@ async function loadLatestPhotos() {
 function loadMembersPreview() {
     const container = document.getElementById('membersPreview');
     if (!container) return;
-    container.innerHTML = `<div class="members-grid">${MEMBERS.slice(0, 5).map(member => createMemberCard(member)).join('')}</div>`;
+    container.innerHTML = `<div class="members-grid">${MEMBERS.slice(0, 6).map(member => createMemberCard(member)).join('')}</div>`;
 }
 
 async function loadBoardPreview() {
@@ -674,7 +567,7 @@ function createFeedCard(post, isPreview = false) {
     return `
         <div class="feed-card" data-id="${post.id}">
             <div class="feed-header">
-                <div class="feed-avatar">${member.emoji}</div>
+                <div class="feed-avatar">${getMemberAvatarHTML(member)}</div>
                 <div class="feed-meta">
                     <div class="feed-author">${member.name}</div>
                     <div class="feed-time">${formatTime(post.time)}</div>
@@ -708,7 +601,7 @@ function createAlbumItem(photo) {
         <div class="album-item" onclick="openImageViewer('${photo.image}', '${member.name}', '${formatTime(photo.time)}')">
             <img src="${photo.image}" alt="${photo.desc || '照片'}" loading="lazy">
             <div class="album-item-overlay">
-                <div class="album-item-author">${member.emoji} ${member.name}</div>
+                <div class="album-item-author">${getMemberAvatarHTML(member)} ${member.name}</div>
                 <div class="album-item-date">${formatTime(photo.time)}</div>
             </div>
         </div>
@@ -719,11 +612,11 @@ function createAlbumItem(photo) {
 function createMemberCard(member) {
     return `
         <div class="member-card" onclick="openMemberDetail(${member.id})">
-            <div class="member-avatar">${member.emoji}</div>
+            <div class="member-avatar-name">${getMemberAvatarHTML(member)}</div>
             <div class="member-name">${member.name}</div>
             <div class="member-title">${member.title}</div>
             <div class="member-desc">${member.desc}</div>
-            <div class="member-join">入坑时间：${member.joinDate}</div>
+            <div class="member-join">🎂 ${member.birthday.slice(0,2)}月${member.birthday.slice(2,4)}日 · 入坑：${member.joinDate}</div>
         </div>
     `;
 }
@@ -736,7 +629,7 @@ function createBoardCard(message) {
             <div class="board-content">${escapeHtml(message.content)}</div>
             <div class="board-footer">
                 <div class="board-author">
-                    <div class="board-avatar">${member.emoji}</div>
+                    <div class="board-avatar">${getMemberAvatarHTML(member)}</div>
                     <div class="board-name">${member.name}</div>
                 </div>
                 <div class="board-time">${formatTime(message.time)}</div>
@@ -877,7 +770,7 @@ async function submitPost() {
     const imageFiles = document.getElementById('postImages');
     const images = [];
 
-    // 上传图片到 Supabase Storage
+    // 上传图片
     if (imageFiles && imageFiles.files.length > 0) {
         for (const file of imageFiles.files) {
             const url = await dataStore.uploadImage(file);
@@ -885,7 +778,7 @@ async function submitPost() {
         }
     }
 
-    await dataStore.addFeed({ content, images });
+    await dataStore.addFeed({ content, images, authorId: currentMemberId });
     closeModal('postModal');
     showToast('发布成功！✨');
 
@@ -927,7 +820,7 @@ async function openComments(feedId) {
                 const member = getMember(comment.authorId);
                 return `
                     <div class="comment-item">
-                        <div class="comment-avatar">${member.emoji}</div>
+                        <div class="comment-avatar">${getMemberAvatarHTML(member)}</div>
                         <div class="comment-body">
                             <div class="comment-author">${member.name}</div>
                             <div class="comment-text">${escapeHtml(comment.content)}</div>
@@ -954,7 +847,7 @@ async function submitComment() {
     }
 
     if (currentCommentFeedId) {
-        await dataStore.addComment(currentCommentFeedId, { content });
+        await dataStore.addComment(currentCommentFeedId, { authorId: currentMemberId, content });
         showToast('评论成功！');
         await openComments(currentCommentFeedId);
 
@@ -973,15 +866,16 @@ async function openMemberDetail(memberId) {
     ]);
 
     const titleEl = document.getElementById('memberModalTitle');
-    if (titleEl) titleEl.textContent = `${member.emoji} ${member.name}的档案`;
+    if (titleEl) titleEl.textContent = `${member.name}的档案`;
 
     const body = document.getElementById('memberModalBody');
     if (!body) return;
 
     body.innerHTML = `
         <div class="member-detail">
-            <div class="member-detail-avatar">${member.emoji}</div>
+            <div class="member-detail-avatar-name">${getMemberAvatarHTML(member)}</div>
             <div class="member-detail-name">${member.name}</div>
+            <div class="member-detail-role">${member.role}</div>
             <div class="member-detail-title">${member.title}</div>
             <div class="member-detail-info">
                 <div class="member-stat">
@@ -997,13 +891,14 @@ async function openMemberDetail(memberId) {
                     <div class="member-stat-label">留言</div>
                 </div>
                 <div class="member-stat">
-                    <div class="member-stat-value">${member.joinDate}</div>
-                    <div class="member-stat-label">入坑时间</div>
+                    <div class="member-stat-value">${member.birthday.slice(0,2)}月${member.birthday.slice(2,4)}日</div>
+                    <div class="member-stat-label">🎂 生日</div>
                 </div>
             </div>
             <div class="member-detail-desc">
                 <strong>个人简介：</strong>${member.desc}<br><br>
-                <strong>座右铭：</strong>${member.motto}
+                <strong>座右铭：</strong>${member.motto}<br><br>
+                <strong>入坑时间：</strong>${member.joinDate}
             </div>
             ${feed.length > 0 ? `<div class="member-detail-posts"><h4>📝 ${member.name}的动态</h4>${feed.slice(0, 5).map(post => createFeedCard(post, true)).join('')}</div>` : ''}
         </div>

@@ -1,4 +1,84 @@
-/* ==================== 加载屏幕 ==================== */
+/* ==================== 名称头像（替代emoji） ==================== */
+.name-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.feed-avatar .name-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+}
+
+.comment-avatar .name-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+}
+
+.board-avatar .name-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+}
+
+.timeline-item-avatar .name-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+}
+
+.nav-user-menu .name-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+}
+
+.member-detail-avatar-name {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-full);
+    margin: 0 auto var(--space-lg);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.member-detail-avatar-name .name-avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+}
+
+/* 登录表单提示 */
+.form-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: var(--space-xs);
+    line-height: 1.5;
+}
+
+/* 成员角色标签 */
+.member-detail-role {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--accent);
+    color: white;
+    border-radius: var(--radius-lg);
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: var(--space-sm);
+}
 .loading-screen {
     display: flex;
     flex-direction: column;
@@ -784,6 +864,15 @@ body {
 .album-item-author {
     font-size: 0.8rem;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.album-item-author .name-avatar {
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
 }
 
 .album-item-date {
@@ -825,6 +914,21 @@ body {
     font-size: 2rem;
     margin: 0 auto var(--space-md);
     box-shadow: var(--shadow-sm);
+}
+
+.member-avatar-name {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-full);
+    margin: 0 auto var(--space-md);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.member-avatar-name .name-avatar {
+    font-size: 2rem;
 }
 
 .member-name {

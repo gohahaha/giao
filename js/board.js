@@ -41,7 +41,7 @@ async function submitBoard() {
         return;
     }
 
-    await dataStore.addBoard({ content });
+    await dataStore.addBoard({ content, authorId: currentMemberId });
     closeModal('boardModal');
     showToast('留言成功！💌');
 

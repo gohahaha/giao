@@ -95,13 +95,14 @@ async function submitAlbum() {
         return;
     }
 
-    // 上传每张照片到 Supabase Storage
+    // 上传每张照片（本地模式用 base64）
     for (const file of imageFiles.files) {
         const url = await dataStore.uploadImage(file);
         await dataStore.addAlbumPhoto({
             category,
             desc: desc || '未命名照片',
-            image: url
+            image: url,
+            authorId: currentMemberId
         });
     }
 

@@ -8,98 +8,147 @@ if (isSupabaseConfigured && window.supabase) {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-// ==================== 示例成员数据 ====================
+// ==================== 成员数据（真实姓名+生日） ====================
 const MEMBERS = [
     {
         id: 1,
-        name: '米奇',
-        emoji: '🐭',
-        title: '群主·小屋创始人',
-        desc: '最爱你们的米奇，giaogiao屋的灵魂人物',
+        name: '杨婷',
+        birthday: '0107',
+        account: '20260107',
+        role: '管理员',
+        title: '小屋管家',
+        desc: '细心体贴的大姐姐，把小屋打理得井井有条',
         joinDate: '2024-01-01',
-        motto: '有你们在，每天都是好日子'
+        motto: '生活的美好在于每一天的陪伴'
     },
     {
         id: 2,
-        name: '小橘',
-        emoji: '🍊',
+        name: '蒋旗',
+        birthday: '0209',
+        account: '20260209',
+        role: '成员',
         title: '气氛担当',
-        desc: '有小橘在的地方就有欢笑',
+        desc: '有蒋旗在的地方就有欢笑和段子',
         joinDate: '2024-01-01',
         motto: '快乐就是和你们在一起'
     },
     {
         id: 3,
-        name: '奶茶',
-        emoji: '🧋',
+        name: '刘雯静',
+        birthday: '0317',
+        account: '20260317',
+        role: '成员',
         title: '美食雷达',
-        desc: '永远在找好吃的路上',
+        desc: '永远在发现好吃的路上，群里吃货代表',
         joinDate: '2024-01-01',
-        motto: '没有什么是一杯奶茶解决不了的'
+        motto: '没有什么是一顿美食解决不了的'
     },
     {
         id: 4,
-        name: '星星',
-        emoji: '⭐',
+        name: '陈利勇',
+        birthday: '0507',
+        account: '20260507',
+        role: '成员',
+        title: '技术达人',
+        desc: '电脑问题找他准没错，靠谱的技术担当',
+        joinDate: '2024-01-01',
+        motto: '办法总比困难多'
+    },
+    {
+        id: 5,
+        name: '李璨江',
+        birthday: '0518',
+        account: '20260518',
+        role: '群主',
+        title: '群主·小屋创始人',
+        desc: '米奇giaogiao屋的灵魂人物，把大家都聚在一起',
+        joinDate: '2024-01-01',
+        motto: '有你们在，每天都是好日子'
+    },
+    {
+        id: 6,
+        name: '王一平',
+        birthday: '0702',
+        account: '20260702',
+        role: '成员',
         title: '摄影大师',
-        desc: '记录生活中的每个美好瞬间',
+        desc: '朋友圈摄影师，记录生活中的每一个美好瞬间',
         joinDate: '2024-01-01',
         motto: '生活需要仪式感'
     },
     {
-        id: 5,
-        name: '月亮',
-        emoji: '🌙',
+        id: 7,
+        name: '夏涛',
+        birthday: '0723',
+        account: '20260723',
+        role: '成员',
+        title: '运动健将',
+        desc: '篮球游泳样样行，永远活力满满',
+        joinDate: '2024-01-01',
+        motto: '生命在于运动'
+    },
+    {
+        id: 8,
+        name: '简诗语',
+        birthday: '0727',
+        account: '20260727',
+        role: '成员',
+        title: '文艺青年',
+        desc: '喜欢读书写诗，用文字温暖每个人的心',
+        joinDate: '2024-01-01',
+        motto: '诗意地栖居在这片大地上'
+    },
+    {
+        id: 9,
+        name: '吕鹏',
+        birthday: '0826',
+        account: '20260826',
+        role: '成员',
         title: '深夜陪伴',
-        desc: '夜晚最温暖的陪伴者',
+        desc: '夜晚最活跃的那个人，失眠患者互助协会会长',
         joinDate: '2024-01-01',
         motto: '晚安是最好的情话'
     },
     {
-        id: 6,
-        name: '小熊',
-        emoji: '🐻',
-        title: '治愈系',
-        desc: '温柔可爱的小熊，给你最暖的拥抱',
+        id: 10,
+        name: '蒋志星',
+        birthday: '1013',
+        account: '20261013',
+        role: '成员',
+        title: '治愈担当',
+        desc: '温柔细心，总能察觉到谁不开心并送上安慰',
         joinDate: '2024-01-01',
         motto: '抱抱你，一切都会好的'
     },
     {
-        id: 7,
-        name: '西瓜',
-        emoji: '🍉',
-        title: '夏日清凉',
-        desc: '甜甜的西瓜，甜甜的夏天',
-        joinDate: '2024-01-01',
-        motto: '夏天和西瓜最配了'
-    },
-    {
-        id: 8,
-        name: '猫咪',
-        emoji: '🐱',
-        title: '慵懒日常',
-        desc: '像猫一样享受生活的每一刻',
-        joinDate: '2024-01-01',
-        motto: '今日份的慵懒已上线'
-    },
-    {
-        id: 9,
-        name: '小兔',
-        emoji: '🐰',
+        id: 11,
+        name: '吕楚钰',
+        birthday: '1104',
+        account: '20261104',
+        role: '成员',
         title: '可爱担当',
-        desc: '蹦蹦跳跳的小兔子',
+        desc: '元气满满，像小太阳一样温暖着每一个人',
         joinDate: '2024-01-01',
         motto: '每天都元气满满'
     },
     {
-        id: 10,
-        name: '小鱼',
-        emoji: '🐟',
+        id: 12,
+        name: '吕佳怡',
+        birthday: '1114',
+        account: '20261114',
+        role: '成员',
         title: '自由灵魂',
-        desc: '像鱼一样自由自在',
+        desc: '随性洒脱，说走就走的旅行达人',
         joinDate: '2024-01-01',
         motto: '生活不止眼前的苟且'
     }
+];
+
+// 成员头像颜色表（每人一个专属颜色）
+const MEMBER_COLORS = [
+    '#E8734A', '#3B82F6', '#10B981', '#8B5CF6',
+    '#C41E3A', '#F59E0B', '#06B6D4', '#EC4899',
+    '#6366F1', '#14B8A6', '#F97316', '#84CC16'
 ];
 
 // ==================== 小屋信息 ====================
@@ -107,216 +156,224 @@ const HOUSE_INFO = {
     name: '米奇giaogiao屋',
     slogan: '无关热闹，只关偏爱',
     createDate: '2024-01-01',
-    description: '米奇giaogiao屋，一个十人小团体，无关热闹，只关偏爱，记录岁岁年年的陪伴，珍藏所有不被辜负的日常。'
+    description: '米奇giaogiao屋，一个十二人小团体，无关热闹，只关偏爱，记录岁岁年年的陪伴，珍藏所有不被辜负的日常。'
 };
 
-// ==================== Supabase 数据操作类 ====================
+// ==================== 本地登录验证 ====================
+function verifyLogin(memberId, password) {
+    const member = MEMBERS.find(m => m.id === memberId);
+    if (!member) return false;
+    return member.account === password;
+}
+
+// ==================== 头像生成 ====================
+function getMemberAvatarHTML(member) {
+    const color = MEMBER_COLORS[(member.id - 1) % MEMBER_COLORS.length];
+    const initial = member.name.charAt(0);
+    return `<span class="name-avatar" style="background-color:${color}">${initial}</span>`;
+}
+
+// ==================== 数据操作类（Supabase 优先 + localStorage 降级）====================
 class DataStore {
     constructor() {
-        this.profiles = new Map(); // user_id -> member_id
-        this.ready = false;
-    }
-
-    // 初始化
-    async init() {
-        if (!supabaseClient) return;
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) {
-            await this.loadProfiles();
-            this.ready = true;
-        }
-    }
-
-    // 加载所有用户档案
-    async loadProfiles() {
-        const { data, error } = await supabaseClient
-            .from('profiles')
-            .select('id, member_id');
-        if (!error && data) {
-            this.profiles.clear();
-            data.forEach(p => this.profiles.set(p.id, p.member_id));
-        }
-    }
-
-    // 获取 member_id from user_id
-    getMemberId(userId) {
-        return this.profiles.get(userId) || 0;
+        this.useCloud = !!supabaseClient;
     }
 
     // ==================== 动态 (Feed) ====================
 
     async getFeed() {
-        if (!supabaseClient) return this.getLocalFeed();
+        if (!this.useCloud) return this.getLocalFeed();
 
-        const { data: posts, error } = await supabaseClient
-            .from('posts')
-            .select('*')
-            .order('created_at', { ascending: false });
+        try {
+            // 获取动态
+            const { data: posts, error } = await supabaseClient
+                .from('posts')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-        if (error) { console.error('getFeed error:', error); return []; }
-        if (!posts || posts.length === 0) return [];
+            if (error) throw error;
+            if (!posts || posts.length === 0) return [];
 
-        const postIds = posts.map(p => p.id);
+            const postIds = posts.map(p => p.id);
 
-        // 批量获取点赞
-        const { data: likes } = await supabaseClient
-            .from('likes')
-            .select('*')
-            .in('post_id', postIds);
+            // 批量获取点赞
+            const { data: likes } = await supabaseClient
+                .from('likes')
+                .select('*')
+                .in('post_id', postIds);
 
-        // 批量获取评论
-        const { data: comments } = await supabaseClient
-            .from('comments')
-            .select('*')
-            .in('post_id', postIds)
-            .order('created_at', { ascending: true });
+            // 批量获取评论
+            const { data: comments } = await supabaseClient
+                .from('comments')
+                .select('*')
+                .in('post_id', postIds)
+                .order('created_at', { ascending: true });
 
-        const likesByPost = {};
-        (likes || []).forEach(l => {
-            if (!likesByPost[l.post_id]) likesByPost[l.post_id] = [];
-            likesByPost[l.post_id].push(this.getMemberId(l.user_id));
-        });
-
-        const commentsByPost = {};
-        (comments || []).forEach(c => {
-            if (!commentsByPost[c.post_id]) commentsByPost[c.post_id] = [];
-            commentsByPost[c.post_id].push({
-                authorId: this.getMemberId(c.user_id),
-                content: c.content,
-                time: new Date(c.created_at).getTime()
+            const likesByPost = {};
+            (likes || []).forEach(l => {
+                if (!likesByPost[l.post_id]) likesByPost[l.post_id] = [];
+                likesByPost[l.post_id].push(l.author_id);
             });
-        });
 
-        return posts.map(post => ({
-            id: post.id,
-            authorId: this.getMemberId(post.user_id),
-            content: post.content,
-            images: post.images || [],
-            likes: likesByPost[post.id] || [],
-            comments: commentsByPost[post.id] || [],
-            time: new Date(post.created_at).getTime()
-        }));
+            const commentsByPost = {};
+            (comments || []).forEach(c => {
+                if (!commentsByPost[c.post_id]) commentsByPost[c.post_id] = [];
+                commentsByPost[c.post_id].push({
+                    id: c.id,
+                    authorId: c.author_id,
+                    content: c.content,
+                    time: new Date(c.created_at).getTime()
+                });
+            });
+
+            return posts.map(post => ({
+                id: post.id,
+                authorId: post.author_id,
+                content: post.content,
+                images: post.images || [],
+                likes: likesByPost[post.id] || [],
+                comments: commentsByPost[post.id] || [],
+                time: new Date(post.created_at).getTime()
+            }));
+        } catch (err) {
+            console.error('getFeed 云端失败，降级到本地:', err.message);
+            return this.getLocalFeed();
+        }
     }
 
     async addFeed(post) {
-        if (!supabaseClient) return this.addLocalFeed(post);
+        if (!this.useCloud) return this.addLocalFeed(post);
 
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) return null;
+        try {
+            const { data, error } = await supabaseClient
+                .from('posts')
+                .insert({
+                    author_id: post.authorId,
+                    content: post.content,
+                    images: post.images || []
+                })
+                .select()
+                .single();
 
-        const { data, error } = await supabaseClient
-            .from('posts')
-            .insert({
-                user_id: session.user.id,
-                content: post.content,
-                images: post.images || []
-            })
-            .select()
-            .single();
+            if (error) throw error;
 
-        if (error) { console.error('addFeed error:', error); return null; }
-
-        return {
-            id: data.id,
-            authorId: this.getMemberId(data.user_id),
-            content: data.content,
-            images: data.images || [],
-            likes: [],
-            comments: [],
-            time: new Date(data.created_at).getTime()
-        };
+            return {
+                id: data.id,
+                authorId: data.author_id,
+                content: data.content,
+                images: data.images || [],
+                likes: [],
+                comments: [],
+                time: new Date(data.created_at).getTime()
+            };
+        } catch (err) {
+            console.error('addFeed 云端失败，降级到本地:', err.message);
+            return this.addLocalFeed(post);
+        }
     }
 
-    async likeFeed(feedId, userId) {
-        if (!supabaseClient) return this.toggleLocalLike(feedId, userId);
+    async likeFeed(feedId, authorId) {
+        if (!this.useCloud) return this.toggleLocalLike(feedId, authorId);
 
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) return null;
-
-        // 检查是否已点赞
-        const { data: existing } = await supabaseClient
-            .from('likes')
-            .select('*')
-            .eq('post_id', feedId)
-            .eq('user_id', session.user.id)
-            .single();
-
-        if (existing) {
-            // 取消点赞
-            await supabaseClient
+        try {
+            // 检查是否已点赞
+            const { data: existing } = await supabaseClient
                 .from('likes')
-                .delete()
+                .select('*')
                 .eq('post_id', feedId)
-                .eq('user_id', session.user.id);
-        } else {
-            // 点赞
-            await supabaseClient
-                .from('likes')
-                .insert({
-                    post_id: feedId,
-                    user_id: session.user.id
-                });
-        }
+                .eq('author_id', authorId)
+                .maybeSingle();
 
-        return true;
+            if (existing) {
+                await supabaseClient
+                    .from('likes')
+                    .delete()
+                    .eq('post_id', feedId)
+                    .eq('author_id', authorId);
+            } else {
+                await supabaseClient
+                    .from('likes')
+                    .insert({
+                        post_id: feedId,
+                        author_id: authorId
+                    });
+            }
+            return true;
+        } catch (err) {
+            console.error('likeFeed 云端失败，降级到本地:', err.message);
+            return this.toggleLocalLike(feedId, authorId);
+        }
     }
 
     async addComment(feedId, comment) {
-        if (!supabaseClient) return this.addLocalComment(feedId, comment);
+        if (!this.useCloud) return this.addLocalComment(feedId, comment);
 
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) return null;
+        try {
+            const { data, error } = await supabaseClient
+                .from('comments')
+                .insert({
+                    post_id: feedId,
+                    author_id: comment.authorId,
+                    content: comment.content
+                })
+                .select()
+                .single();
 
-        const { data, error } = await supabaseClient
-            .from('comments')
-            .insert({
-                post_id: feedId,
-                user_id: session.user.id,
-                content: comment.content
-            })
-            .select()
-            .single();
+            if (error) throw error;
 
-        if (error) { console.error('addComment error:', error); return null; }
-
-        return {
-            authorId: this.getMemberId(data.user_id),
-            content: data.content,
-            time: new Date(data.created_at).getTime()
-        };
+            return {
+                id: data.id,
+                authorId: data.author_id,
+                content: data.content,
+                time: new Date(data.created_at).getTime()
+            };
+        } catch (err) {
+            console.error('addComment 云端失败，降级到本地:', err.message);
+            return this.addLocalComment(feedId, comment);
+        }
     }
 
     async deleteFeed(feedId) {
-        if (!supabaseClient) return this.deleteLocalFeed(feedId);
+        if (!this.useCloud) return this.deleteLocalFeed(feedId);
 
-        const { error } = await supabaseClient
-            .from('posts')
-            .delete()
-            .eq('id', feedId);
+        try {
+            const { error } = await supabaseClient
+                .from('posts')
+                .delete()
+                .eq('id', feedId);
 
-        if (error) console.error('deleteFeed error:', error);
+            if (error) throw error;
+        } catch (err) {
+            console.error('deleteFeed 云端失败，降级到本地:', err.message);
+            this.deleteLocalFeed(feedId);
+        }
     }
 
     // ==================== 相册 (Album) ====================
 
     async getAlbum() {
-        if (!supabaseClient) return this.getLocalAlbum();
+        if (!this.useCloud) return this.getLocalAlbum();
 
-        const { data, error } = await supabaseClient
-            .from('photos')
-            .select('*')
-            .order('created_at', { ascending: false });
+        try {
+            const { data, error } = await supabaseClient
+                .from('photos')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-        if (error) { console.error('getAlbum error:', error); return []; }
+            if (error) throw error;
 
-        return (data || []).map(photo => ({
-            id: photo.id,
-            authorId: this.getMemberId(photo.user_id),
-            category: photo.category,
-            desc: photo.description || '',
-            image: photo.image_url,
-            time: new Date(photo.created_at).getTime()
-        }));
+            return (data || []).map(photo => ({
+                id: photo.id,
+                authorId: photo.author_id,
+                category: photo.category,
+                desc: photo.description || '',
+                image: photo.image_url,
+                time: new Date(photo.created_at).getTime()
+            }));
+        } catch (err) {
+            console.error('getAlbum 云端失败，降级到本地:', err.message);
+            return this.getLocalAlbum();
+        }
     }
 
     async getAlbumByCategory(category) {
@@ -326,99 +383,118 @@ class DataStore {
     }
 
     async addAlbumPhoto(photo) {
-        if (!supabaseClient) return this.addLocalPhoto(photo);
+        if (!this.useCloud) return this.addLocalPhoto(photo);
 
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) return null;
+        try {
+            const { data, error } = await supabaseClient
+                .from('photos')
+                .insert({
+                    author_id: photo.authorId,
+                    category: photo.category,
+                    description: photo.desc || '',
+                    image_url: photo.image
+                })
+                .select()
+                .single();
 
-        const { data, error } = await supabaseClient
-            .from('photos')
-            .insert({
-                user_id: session.user.id,
-                category: photo.category,
-                description: photo.desc || '',
-                image_url: photo.image
-            })
-            .select()
-            .single();
+            if (error) throw error;
 
-        if (error) { console.error('addAlbumPhoto error:', error); return null; }
-
-        return {
-            id: data.id,
-            authorId: this.getMemberId(data.user_id),
-            category: data.category,
-            desc: data.description,
-            image: data.image_url,
-            time: new Date(data.created_at).getTime()
-        };
+            return {
+                id: data.id,
+                authorId: data.author_id,
+                category: data.category,
+                desc: data.description,
+                image: data.image_url,
+                time: new Date(data.created_at).getTime()
+            };
+        } catch (err) {
+            console.error('addAlbumPhoto 云端失败，降级到本地:', err.message);
+            return this.addLocalPhoto(photo);
+        }
     }
 
     async deleteAlbumPhoto(photoId) {
-        if (!supabaseClient) return this.deleteLocalPhoto(photoId);
+        if (!this.useCloud) return this.deleteLocalPhoto(photoId);
 
-        const { error } = await supabaseClient
-            .from('photos')
-            .delete()
-            .eq('id', photoId);
+        try {
+            const { error } = await supabaseClient
+                .from('photos')
+                .delete()
+                .eq('id', photoId);
 
-        if (error) console.error('deleteAlbumPhoto error:', error);
+            if (error) throw error;
+        } catch (err) {
+            console.error('deleteAlbumPhoto 云端失败，降级到本地:', err.message);
+            this.deleteLocalPhoto(photoId);
+        }
     }
 
     // ==================== 留言板 (Board) ====================
 
     async getBoard() {
-        if (!supabaseClient) return this.getLocalBoard();
+        if (!this.useCloud) return this.getLocalBoard();
 
-        const { data, error } = await supabaseClient
-            .from('messages')
-            .select('*')
-            .order('created_at', { ascending: false });
+        try {
+            const { data, error } = await supabaseClient
+                .from('messages')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-        if (error) { console.error('getBoard error:', error); return []; }
+            if (error) throw error;
 
-        return (data || []).map(msg => ({
-            id: msg.id,
-            authorId: this.getMemberId(msg.user_id),
-            content: msg.content,
-            time: new Date(msg.created_at).getTime()
-        }));
+            return (data || []).map(msg => ({
+                id: msg.id,
+                authorId: msg.author_id,
+                content: msg.content,
+                time: new Date(msg.created_at).getTime()
+            }));
+        } catch (err) {
+            console.error('getBoard 云端失败，降级到本地:', err.message);
+            return this.getLocalBoard();
+        }
     }
 
     async addBoard(message) {
-        if (!supabaseClient) return this.addLocalBoard(message);
+        if (!this.useCloud) return this.addLocalBoard(message);
 
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) return null;
+        try {
+            const { data, error } = await supabaseClient
+                .from('messages')
+                .insert({
+                    author_id: message.authorId,
+                    content: message.content
+                })
+                .select()
+                .single();
 
-        const { data, error } = await supabaseClient
-            .from('messages')
-            .insert({
-                user_id: session.user.id,
-                content: message.content
-            })
-            .select()
-            .single();
+            if (error) throw error;
 
-        if (error) { console.error('addBoard error:', error); return null; }
-
-        return {
-            id: data.id,
-            authorId: this.getMemberId(data.user_id),
-            content: data.content,
-            time: new Date(data.created_at).getTime()
-        };
+            return {
+                id: data.id,
+                authorId: data.author_id,
+                content: data.content,
+                time: new Date(data.created_at).getTime()
+            };
+        } catch (err) {
+            console.error('addBoard 云端失败，降级到本地:', err.message);
+            return this.addLocalBoard(message);
+        }
     }
 
     async deleteBoard(boardId) {
-        if (!supabaseClient) return this.deleteLocalBoard(boardId);
+        if (!this.useCloud) return this.deleteLocalBoard(boardId);
 
-        const { error } = await supabaseClient
-            .from('messages')
-            .delete()
-            .eq('id', boardId);
+        try {
+            const { error } = await supabaseClient
+                .from('messages')
+                .delete()
+                .eq('id', boardId);
 
-        if (error) console.error('deleteBoard error:', error);
+            if (error) throw error;
+        } catch (err) {
+            console.error('deleteBoard 云端失败，降级到本地:', err.message);
+            this.deleteLocalBoard(boardId);
+        }
     }
 
     // ==================== 成员相关 ====================
@@ -501,179 +577,48 @@ class DataStore {
         return Array.from(years).sort((a, b) => b - a);
     }
 
-    // ==================== 图片上传 ====================
+    // ==================== 图片上传（Supabase Storage 优先，base64 降级）====================
 
     async uploadImage(file) {
-        if (!supabaseClient) {
-            // 离线模式：转成 base64
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = e => resolve(e.target.result);
-                reader.readAsDataURL(file);
-            });
+        if (!this.useCloud) {
+            return this.uploadImageAsBase64(file);
         }
 
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) return '';
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+            const filePath = `public/${fileName}`;
 
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
-        const filePath = `${session.user.id}/${fileName}`;
+            const { error: uploadError } = await supabaseClient.storage
+                .from('images')
+                .upload(filePath, file);
 
-        const { error: uploadError } = await supabaseClient.storage
-            .from('images')
-            .upload(filePath, file);
+            if (uploadError) throw uploadError;
 
-        if (uploadError) {
-            console.error('Image upload error:', uploadError);
-            // 降级为 base64
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = e => resolve(e.target.result);
-                reader.readAsDataURL(file);
-            });
+            const { data: { publicUrl } } = supabaseClient.storage
+                .from('images')
+                .getPublicUrl(filePath);
+
+            return publicUrl;
+        } catch (err) {
+            console.error('图片上传云端失败，降级到 base64:', err.message);
+            return this.uploadImageAsBase64(file);
         }
-
-        const { data: { publicUrl } } = supabaseClient.storage
-            .from('images')
-            .getPublicUrl(filePath);
-
-        return publicUrl;
     }
 
-    // ==================== 认证相关 ====================
-
-    async signUp(email, password, memberId) {
-        if (!supabaseClient) throw new Error('Supabase 未配置');
-
-        // 注册用户
-        const { data, error } = await supabaseClient.auth.signUp({
-            email,
-            password
+    uploadImageAsBase64(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.readAsDataURL(file);
         });
-
-        if (error) throw error;
-        if (!data.user) throw new Error('注册失败');
-
-        // 创建档案
-        const { error: profileError } = await supabaseClient
-            .from('profiles')
-            .insert({
-                id: data.user.id,
-                member_id: memberId,
-                email: email
-            });
-
-        if (profileError) throw profileError;
-
-        await this.loadProfiles();
-        return data.user;
     }
 
-    async signIn(email, password) {
-        if (!supabaseClient) throw new Error('Supabase 未配置');
-
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (error) throw error;
-
-        await this.loadProfiles();
-        return data.user;
-    }
-
-    async signOut() {
-        if (!supabaseClient) return;
-        await supabaseClient.auth.signOut();
-        this.profiles.clear();
-        this.ready = false;
-    }
-
-    async getCurrentUser() {
-        if (!supabaseClient) return null;
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        return session ? session.user : null;
-    }
-
-    async getCurrentMemberId() {
-        const user = await this.getCurrentUser();
-        if (!user) return 0;
-        return this.getMemberId(user.id);
-    }
-
-    // ==================== 种子数据 ====================
-
-    async seedSampleData() {
-        if (!supabaseClient) return;
-
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) return;
-
-        // 检查是否已有数据
-        const { count } = await supabaseClient
-            .from('posts')
-            .select('*', { count: 'exact', head: true });
-
-        if (count > 0) return; // 已有数据，不重复播种
-
-        const userId = session.user.id;
-        const now = Date.now();
-
-        // 示例动态
-        const posts = [
-            {
-                user_id: userId,
-                content: '欢迎来到米奇giaogiao屋！这里是我们十个人的专属小窝，以后所有的日常、照片、碎碎念都可以存在这里啦～',
-                images: [],
-                created_at: new Date(now - 100000).toISOString()
-            },
-            {
-                user_id: userId,
-                content: '今天天气好好，和小橘一起去了公园散步，拍了好多照片！分享给大家看看～',
-                images: ['https://picsum.photos/400/400?random=1', 'https://picsum.photos/400/400?random=2'],
-                created_at: new Date(now - 200000).toISOString()
-            },
-            {
-                user_id: userId,
-                content: '深夜碎碎念：今天工作好累，但是想到有你们这群朋友就觉得一切都值得了。晚安，好梦～🌙',
-                images: [],
-                created_at: new Date(now - 300000).toISOString()
-            }
-        ];
-
-        for (const post of posts) {
-            await supabaseClient.from('posts').insert(post);
-        }
-
-        // 示例留言
-        const messages = [
-            {
-                user_id: userId,
-                content: '小屋正式成立啦！希望我们能一直一直在一起，记录所有美好的瞬间。爱你们！❤️',
-                created_at: new Date(now - 50000).toISOString()
-            },
-            {
-                user_id: userId,
-                content: '今天入群一周年纪念日，感谢遇见你们每一个人都那么好～',
-                created_at: new Date(now - 150000).toISOString()
-            }
-        ];
-
-        for (const msg of messages) {
-            await supabaseClient.from('messages').insert(msg);
-        }
-
-        console.log('✅ 种子数据已播种');
-    }
-
-    // ==================== 降级：本地 localStorage 操作（Supabase 未配置时使用）====================
+    // ==================== 降级：本地 localStorage（Supabase 不可用时使用）====================
 
     getLocalFeed() {
-        try {
-            return JSON.parse(localStorage.getItem('house_feed') || '[]');
-        } catch { return []; }
+        try { return JSON.parse(localStorage.getItem('house_feed') || '[]'); }
+        catch { return []; }
     }
 
     addLocalFeed(post) {
@@ -687,12 +632,12 @@ class DataStore {
         return post;
     }
 
-    toggleLocalLike(feedId, userId) {
+    toggleLocalLike(feedId, authorId) {
         const feed = this.getLocalFeed();
         const index = feed.findIndex(f => f.id === feedId);
         if (index !== -1) {
-            const likeIndex = feed[index].likes.indexOf(userId);
-            if (likeIndex === -1) feed[index].likes.push(userId);
+            const likeIndex = feed[index].likes.indexOf(authorId);
+            if (likeIndex === -1) feed[index].likes.push(authorId);
             else feed[index].likes.splice(likeIndex, 1);
             localStorage.setItem('house_feed', JSON.stringify(feed));
         }
@@ -706,6 +651,7 @@ class DataStore {
             feed[index].comments.push(comment);
             localStorage.setItem('house_feed', JSON.stringify(feed));
         }
+        return comment;
     }
 
     deleteLocalFeed(feedId) {
@@ -751,30 +697,31 @@ class DataStore {
         localStorage.setItem('house_board', JSON.stringify(board));
     }
 
-    // 初始化本地种子数据
+    // ==================== 初始化本地种子数据（首次使用时自动填充）====================
     initLocalSeedData() {
-        if (localStorage.getItem('house_feed')) return;
+        if (localStorage.getItem('house_feed_seeded')) return;
 
         const sampleFeed = [
-            { id: Date.now() - 100000, authorId: 1, content: '欢迎来到米奇giaogiao屋！这里是我们十个人的专属小窝～', images: [], likes: [2, 3, 4, 5], comments: [{ authorId: 2, content: '终于有自己的小屋了！太棒了', time: Date.now() - 90000 }, { authorId: 3, content: '以后再也不用担心聊天记录过期了', time: Date.now() - 80000 }], time: Date.now() - 100000 },
-            { id: Date.now() - 200000, authorId: 2, content: '今天天气好好，和小橘一起去了公园散步！', images: ['https://picsum.photos/400/400?random=1', 'https://picsum.photos/400/400?random=2'], likes: [1, 3, 5], comments: [{ authorId: 4, content: '好美啊！下次一起去', time: Date.now() - 190000 }], time: Date.now() - 200000 },
-            { id: Date.now() - 300000, authorId: 5, content: '深夜碎碎念：今天工作好累，但是想到有你们这群朋友就觉得一切都值得了。晚安🌙', images: [], likes: [1, 2, 3, 4, 6, 7, 8, 9, 10], comments: [{ authorId: 6, content: '抱抱月亮，明天会更好的', time: Date.now() - 290000 }], time: Date.now() - 300000 }
+            { id: Date.now() - 100000, authorId: 5, content: '欢迎来到米奇giaogiao屋！这里是我们十二个人的专属小窝～以后所有的日常、照片、碎碎念都可以存在这里啦！', images: [], likes: [1, 2, 3, 4, 6], comments: [{ authorId: 2, content: '终于有自己的小屋了！太棒了！', time: Date.now() - 90000 }, { authorId: 3, content: '以后再也不用担心聊天记录过期了～', time: Date.now() - 80000 }], time: Date.now() - 100000 },
+            { id: Date.now() - 200000, authorId: 6, content: '今天天气好好，出去拍了好多照片！分享给大家看看～📸', images: ['https://picsum.photos/400/400?random=1', 'https://picsum.photos/400/400?random=2'], likes: [5, 1, 7], comments: [{ authorId: 1, content: '好美啊！下次一起去拍照！', time: Date.now() - 190000 }], time: Date.now() - 200000 },
+            { id: Date.now() - 300000, authorId: 9, content: '深夜碎碎念：今天工作好累，但是想到有你们这群朋友就觉得一切都值得了。晚安🌙', images: [], likes: [5, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12], comments: [{ authorId: 10, content: '抱抱，明天会更好的！', time: Date.now() - 290000 }], time: Date.now() - 300000 }
         ];
 
         const sampleAlbum = [
-            { id: Date.now() - 100000, authorId: 1, category: 'party', desc: '第一次全员聚餐合影', image: 'https://picsum.photos/400/400?random=10', time: Date.now() - 100000 },
-            { id: Date.now() - 200000, authorId: 3, category: 'daily', desc: '今天的下午茶', image: 'https://picsum.photos/400/400?random=11', time: Date.now() - 200000 },
-            { id: Date.now() - 300000, authorId: 2, category: 'funny', desc: '小橘的搞笑表情', image: 'https://picsum.photos/400/400?random=12', time: Date.now() - 300000 }
+            { id: Date.now() - 100000, authorId: 5, category: 'party', desc: '第一次全员聚餐合影！十二个人终于凑齐了！', image: 'https://picsum.photos/400/400?random=10', time: Date.now() - 100000 },
+            { id: Date.now() - 200000, authorId: 3, category: 'daily', desc: '今天的下午茶，发现了一家超棒的店！', image: 'https://picsum.photos/400/400?random=11', time: Date.now() - 200000 },
+            { id: Date.now() - 300000, authorId: 2, category: 'funny', desc: '哈哈哈哈哈哈哈这个表情绝了', image: 'https://picsum.photos/400/400?random=12', time: Date.now() - 300000 }
         ];
 
         const sampleBoard = [
-            { id: Date.now() - 50000, authorId: 1, content: '小屋正式成立啦！希望我们能一直一直在一起❤️', time: Date.now() - 50000 },
-            { id: Date.now() - 150000, authorId: 6, content: '今天入群一周年，感谢遇见你们每一个人～', time: Date.now() - 150000 }
+            { id: Date.now() - 50000, authorId: 5, content: '小屋正式成立啦！希望我们十二个人能一直一直在一起，记录所有美好的瞬间。爱你们！❤️', time: Date.now() - 50000 },
+            { id: Date.now() - 150000, authorId: 10, content: '今天入群一周年纪念日，感谢遇见你们每一个人都那么好～', time: Date.now() - 150000 }
         ];
 
         localStorage.setItem('house_feed', JSON.stringify(sampleFeed));
         localStorage.setItem('house_album', JSON.stringify(sampleAlbum));
         localStorage.setItem('house_board', JSON.stringify(sampleBoard));
+        localStorage.setItem('house_feed_seeded', 'true');
     }
 }
 

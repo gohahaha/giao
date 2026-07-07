@@ -101,7 +101,7 @@ function createTimelineItem(item) {
     return `
         <div class="timeline-item">
             <div class="timeline-item-header">
-                <div class="timeline-item-avatar">${member.emoji}</div>
+                <div class="timeline-item-avatar">${getMemberAvatarHTML(member)}</div>
                 <div class="timeline-item-meta">
                     <div class="timeline-item-author">${member.name} ${typeIcon}</div>
                     <div class="timeline-item-time">${formatFullTime(item.time)}</div>
