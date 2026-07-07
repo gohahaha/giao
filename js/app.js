@@ -6,6 +6,7 @@ let currentMemberId = 0;       // 对应 MEMBERS 数组的 id
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('✅ 米奇giaogiao屋 v3.0 已加载');
     initStars();
 
     // 检查是否已有本地登录状态
