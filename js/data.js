@@ -63,6 +63,32 @@ class DataStore {
         this.useCloud = !!supabaseClient;
         this.cloudOk = false; // 确认 Supabase 连通后才用
         this._checkCloud();
+        this._runCleanup();
+    }
+
+    _runCleanup() {
+        // v5 清理：清除旧种子数据和 seeded 标记
+        if (!localStorage.getItem('house_v5_cleanup_done')) {
+            // 清除旧的 seeded 标记
+            localStorage.removeItem('house_feed_seeded');
+            // 清除所有种子数据（内容匹配）
+            const feed = this.getLocalFeed();
+            const seedTexts = ['欢迎来到米奇giaogiao屋', '今天天气好好', '深夜碎碎念：有你们真好'];
+            const cleanedFeed = feed.filter(p => !seedTexts.some(t => p.content && p.content.includes(t)));
+            if (cleanedFeed.length !== feed.length) localStorage.setItem('house_feed', JSON.stringify(cleanedFeed));
+
+            const board = this.getLocalBoard();
+            const seedBoardTexts = ['小屋正式成立啦', '感谢遇见你们每一个人'];
+            const cleanedBoard = board.filter(m => !seedBoardTexts.some(t => m.content && m.content.includes(t)));
+            if (cleanedBoard.length !== board.length) localStorage.setItem('house_board', JSON.stringify(cleanedBoard));
+
+            const album = this.getLocalAlbum();
+            const seedAlbumDescs = ['第一次全员聚餐合影', '今天的下午茶'];
+            const cleanedAlbum = album.filter(p => !seedAlbumDescs.some(t => p.desc && p.desc.includes(t)));
+            if (cleanedAlbum.length !== album.length) localStorage.setItem('house_album', JSON.stringify(cleanedAlbum));
+
+            localStorage.setItem('house_v5_cleanup_done', 'true');
+        }
     }
 
     async _checkCloud() {
