@@ -133,9 +133,6 @@ async function onUserLoggedIn() {
     const authContainer = document.getElementById('authContainer');
     if (authContainer) authContainer.remove();
 
-    // 初始化本地种子数据（仅在本地模式下首次使用）
-    dataStore.initLocalSeedData();
-
     // 初始化导航
     initNavigation();
     updateUserMenu();
@@ -233,7 +230,7 @@ function rebuildMainContent() {
                         <div class="about-info">
                             <div class="info-card"><span class="info-icon">🏠</span><h3>小屋名称</h3><p>米奇giaogiao屋</p></div>
                             <div class="info-card"><span class="info-icon">👥</span><h3>成员人数</h3><p>12位家人</p></div>
-                            <div class="info-card"><span class="info-icon">📅</span><h3>建群时间</h3><p id="groupDate">2024-01-01</p></div>
+                            <div class="info-card"><span class="info-icon">📅</span><h3>建群时间</h3><p id="groupDate">2020-04-25</p></div>
                             <div class="info-card"><span class="info-icon">🎯</span><h3>我们的口号</h3><p id="groupSlogan">无关热闹，只关偏爱</p></div>
                         </div>
                         <div class="about-memories"><h2>📸 小屋纪念册</h2><div class="memories-grid" id="aboutMemories"></div></div>

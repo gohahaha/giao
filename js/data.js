@@ -27,7 +27,7 @@ const MEMBERS = [
 const MEMBER_COLORS = ['#E8734A','#3B82F6','#10B981','#8B5CF6','#C41E3A','#F59E0B','#06B6D4','#EC4899','#6366F1','#14B8A6','#F97316','#84CC16'];
 
 const HOUSE_INFO = {
-    name: '米奇giaogiao屋', slogan: '无关热闹，只关偏爱', createDate: '2024-01-01',
+    name: '米奇giaogiao屋', slogan: '无关热闹，只关偏爱', createDate: '2020-04-25',
     description: '米奇giaogiao屋，一个十二人小团体，无关热闹，只关偏爱，记录岁岁年年的陪伴，珍藏所有不被辜负的日常。'
 };
 
@@ -246,27 +246,6 @@ class DataStore {
     deleteLocalBoard(boardId, authorId) { const b = this.getLocalBoard().filter(x=>!(x.id===boardId&&x.authorId===authorId)); localStorage.setItem('house_board', JSON.stringify(b)); }
     updateLocalBoard(boardId, authorId, newContent) { const b = this.getLocalBoard(); const m = b.find(x=>x.id===boardId&&x.authorId===authorId); if(m){ m.content=newContent; localStorage.setItem('house_board',JSON.stringify(b)); return true; } return false; }
 
-    initLocalSeedData() {
-        if (localStorage.getItem('house_feed_seeded')) return;
-        const now = Date.now();
-        const feed = [
-            { id:now-100000, authorId:5, content:'欢迎来到米奇giaogiao屋！这里是我们十二个人的专属小窝～', images:[], likes:[1,2,3,4,6], comments:[{authorId:2,content:'终于有自己的小屋了！',time:now-90000}], time:now-100000 },
-            { id:now-200000, authorId:6, content:'今天天气好好，出去拍了好多照片！分享给大家看看～📸', images:['https://picsum.photos/400/400?random=1','https://picsum.photos/400/400?random=2'], likes:[5,1,7], comments:[{authorId:1,content:'好美啊！下次一起去！',time:now-190000}], time:now-200000 },
-            { id:now-300000, authorId:9, content:'深夜碎碎念：有你们真好🌙', images:[], likes:[5,1,2,3,4,6,7,8,10,11,12], comments:[], time:now-300000 }
-        ];
-        const album = [
-            { id:now-100000, authorId:5, category:'party', desc:'第一次全员聚餐合影！', image:'https://picsum.photos/400/400?random=10', time:now-100000 },
-            { id:now-200000, authorId:3, category:'daily', desc:'今天的下午茶', image:'https://picsum.photos/400/400?random=11', time:now-200000 }
-        ];
-        const board = [
-            { id:now-50000, authorId:5, content:'小屋正式成立啦！希望我们十二个人能一直一直在一起❤️', time:now-50000 },
-            { id:now-150000, authorId:10, content:'感谢遇见你们每一个人～', time:now-150000 }
-        ];
-        localStorage.setItem('house_feed', JSON.stringify(feed));
-        localStorage.setItem('house_album', JSON.stringify(album));
-        localStorage.setItem('house_board', JSON.stringify(board));
-        localStorage.setItem('house_feed_seeded', 'true');
-    }
 }
 
 const dataStore = new DataStore();
