@@ -133,6 +133,18 @@ async function onUserLoggedIn() {
     const authContainer = document.getElementById('authContainer');
     if (authContainer) authContainer.remove();
 
+    // 初始化实时消息订阅（像朋友圈一样即时刷新）
+    dataStore.subscribeToChanges((section) => {
+        // 静默刷新当前页面数据
+        if (currentSection === section) {
+            loadSectionData(section);
+        }
+        // 如果首页开着，也刷新（首页汇总了所有内容）
+        if (currentSection === 'home') {
+            loadHomePage();
+        }
+    });
+
     // 初始化导航
     initNavigation();
     updateUserMenu();

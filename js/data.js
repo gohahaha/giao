@@ -100,6 +100,48 @@ class DataStore {
         } catch (e) { console.log('📦 使用本地模式（Supabase 不可达）'); }
     }
 
+    // 实时订阅：监听所有表变更，自动刷新 UI
+    subscribeToChanges(onChange) {
+        if (!this.useCloud || !supabaseClient) return;
+        const channel = supabaseClient
+            .channel('realtime-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, (payload) => {
+                console.log('🔄 动态更新:', payload.eventType);
+                onChange('feed');
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload) => {
+                console.log('🔄 评论更新:', payload.eventType);
+                onChange('feed');
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, (payload) => {
+                console.log('🔄 点赞更新:', payload.eventType);
+                onChange('feed');
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'photos' }, (payload) => {
+                console.log('🔄 相册更新:', payload.eventType);
+                onChange('album');
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
+                console.log('🔄 留言更新:', payload.eventType);
+                onChange('board');
+            })
+            .subscribe((status) => {
+                if (status === 'SUBSCRIBED') console.log('🔔 实时消息已开启');
+                else console.log('📡 实时消息状态:', status);
+            });
+
+        // 定期重连保活
+        this._realtimeChannel = channel;
+    }
+
+    // 取消实时订阅
+    unsubscribeChanges() {
+        if (this._realtimeChannel) {
+            supabaseClient.removeChannel(this._realtimeChannel);
+            this._realtimeChannel = null;
+        }
+    }
+
     // 数据读取：云端优先（如果通），否则本地
     async getFeed() {
         if (this.cloudOk) {
