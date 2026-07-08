@@ -363,6 +363,39 @@ function rebuildModals() {
             </div>
         </div>
 
+        <!-- 编辑资料弹窗 -->
+        <div class="modal" id="editProfileModal">
+            <div class="modal-overlay" onclick="closeModal('editProfileModal')"></div>
+            <div class="modal-content">
+                <div class="modal-header"><h3>✏️ 编辑个人资料</h3><button class="modal-close" onclick="closeModal('editProfileModal')">✕</button></div>
+                <div class="modal-body">
+                    <div class="edit-profile-section">
+                        <label>🎭 头像</label>
+                        <div class="avatar-edit-area">
+                            <div id="editAvatarPreview" class="edit-avatar-preview"></div>
+                            <div class="avatar-edit-options">
+                                <div class="emoji-picker-label">选择 Emoji：</div>
+                                <div class="emoji-grid" id="emojiGrid">
+                                    ${['😊','😎','🌟','❤️','🔥','🎉','🌈','🌸','🍀','💎','🐱','🐶','🦊','🐼','🐨','🐰','🦁','🐯','🐸','🐵','🐤','🦄','🐙','🦋','🌻','🍕','🎂','⚽','🎮','📚','🎵','✈️','🚀','💡','☕','🍩','🎨','🧩','💪','🤗','🥳'].map(e => `<button class="emoji-option" onclick="selectAvatarEmoji('${e}')" title="${e}">${e}</button>`).join('')}
+                                </div>
+                                <div class="avatar-upload-label">或上传图片：</div>
+                                <label class="upload-btn">📷 选择图片<input type="file" id="avatarImageInput" accept="image/*" onchange="previewAvatarImage(this)"></label>
+                                <button class="btn-secondary" onclick="resetAvatarToDefault()" style="margin-top:8px;">🔄 恢复默认头像</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="edit-profile-section">
+                        <label for="editMotto">💬 个性签名</label>
+                        <input type="text" id="editMotto" placeholder="写一句你的个性签名..." maxlength="50" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeModal('editProfileModal')">取消</button>
+                    <button class="btn-primary" onclick="saveProfile()">💾 保存</button>
+                </div>
+            </div>
+        </div>
+
         <!-- 评论弹窗 -->
         <div class="modal" id="commentModal">
             <div class="modal-overlay" onclick="closeModal('commentModal')"></div>
@@ -397,6 +430,7 @@ function updateUserMenu() {
     userMenu.innerHTML = `
         ${getMemberAvatarHTML(member)}
         <span class="nav-user-name">${member.name}</span>
+        <button class="btn-edit-profile" onclick="openEditProfileModal()" title="编辑资料">✏️</button>
         <button class="btn-logout" onclick="handleLogout()" title="退出登录">🚪</button>
     `;
     navContainer.appendChild(userMenu);
@@ -408,6 +442,96 @@ async function handleLogout() {
         currentMemberId = 0;
         location.reload();
     }
+}
+
+// ==================== 编辑资料 ====================
+let pendingAvatar = null;
+
+function openEditProfileModal() {
+    const member = getMember(currentMemberId);
+    // 预填签名
+    const mottoEl = document.getElementById('editMotto');
+    if (mottoEl) mottoEl.value = getMemberDisplayMotto(member);
+    // 预览当前头像
+    pendingAvatar = dataStore.getCustomAvatar(currentMemberId);
+    updateEditAvatarPreview();
+    // 清空图片 input
+    const imgInput = document.getElementById('avatarImageInput');
+    if (imgInput) imgInput.value = '';
+    openModal('editProfileModal');
+}
+
+function updateEditAvatarPreview() {
+    const preview = document.getElementById('editAvatarPreview');
+    if (!preview) return;
+    const member = getMember(currentMemberId);
+    if (pendingAvatar) {
+        if (pendingAvatar.length <= 4 && !pendingAvatar.includes('/') && !pendingAvatar.includes('.')) {
+            preview.innerHTML = `<span class="name-avatar custom-emoji-avatar" style="font-size:2.5rem;">${pendingAvatar}</span>`;
+        } else {
+            preview.innerHTML = `<span class="name-avatar" style="background-image:url(${pendingAvatar});background-size:cover;background-position:center;width:64px;height:64px;"></span>`;
+        }
+    } else {
+        preview.innerHTML = getMemberAvatarHTML(member);
+    }
+}
+
+function selectAvatarEmoji(emoji) {
+    pendingAvatar = emoji;
+    updateEditAvatarPreview();
+    // 高亮选中的 emoji
+    document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('selected'));
+    // 找到被点击的按钮并高亮
+    const buttons = document.querySelectorAll('.emoji-option');
+    buttons.forEach(b => { if (b.textContent === emoji) b.classList.add('selected'); });
+}
+
+function previewAvatarImage(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        pendingAvatar = e.target.result;
+        updateEditAvatarPreview();
+        // 取消 emoji 高亮
+        document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('selected'));
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function resetAvatarToDefault() {
+    pendingAvatar = null;
+    updateEditAvatarPreview();
+    document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('selected'));
+    const imgInput = document.getElementById('avatarImageInput');
+    if (imgInput) imgInput.value = '';
+}
+
+async function saveProfile() {
+    const mottoEl = document.getElementById('editMotto');
+    const newMotto = mottoEl ? mottoEl.value.trim() : '';
+    // 保存头像
+    if (pendingAvatar) {
+        dataStore.saveCustomAvatar(currentMemberId, pendingAvatar);
+    } else {
+        // 删除自定义头像恢复默认
+        const avatars = dataStore.getAllCustomAvatars();
+        delete avatars[currentMemberId];
+        localStorage.setItem('house_avatars', JSON.stringify(avatars));
+    }
+    // 保存签名
+    if (newMotto && newMotto !== getMember(currentMemberId).motto) {
+        dataStore.saveCustomMotto(currentMemberId, newMotto);
+    } else {
+        const mottos = dataStore.getAllCustomMottos();
+        delete mottos[currentMemberId];
+        localStorage.setItem('house_mottos', JSON.stringify(mottos));
+    }
+    closeModal('editProfileModal');
+    showToast('资料已更新！✨');
+    // 刷新 UI
+    updateUserMenu();
+    if (currentSection === 'home') await loadHomePage();
+    else if (currentSection === 'members') await loadMembers();
 }
 
 // ==================== 星星背景 ====================
@@ -520,7 +644,7 @@ async function loadLatestPhotos() {
 function loadMembersPreview() {
     const container = document.getElementById('membersPreview');
     if (!container) return;
-    container.innerHTML = `<div class="members-grid">${MEMBERS.slice(0, 6).map(member => createMemberCard(member)).join('')}</div>`;
+    container.innerHTML = `<div class="members-grid">${MEMBERS.map(member => createMemberCard(member)).join('')}</div>`;
 }
 
 async function loadBoardPreview() {
@@ -645,8 +769,8 @@ function createMemberCard(member) {
             <div class="member-avatar-name">${getMemberAvatarHTML(member)}</div>
             <div class="member-name">${member.name}</div>
             <div class="member-title">${member.title}</div>
-            <div class="member-desc">${member.desc}</div>
-            <div class="member-join">🎂 ${member.birthday.slice(0,2)}月${member.birthday.slice(2,4)}日 · 入坑：${member.joinDate}</div>
+            <div class="member-desc">${getMemberDisplayMotto(member)}</div>
+            <div class="member-join">🎂 ${member.birthday.slice(0,2)}月${member.birthday.slice(2,4)}日</div>
         </div>
     `;
 }
@@ -963,9 +1087,8 @@ async function openMemberDetail(memberId) {
                 </div>
             </div>
             <div class="member-detail-desc">
-                <strong>个人简介：</strong>${member.desc}<br><br>
-                <strong>座右铭：</strong>${member.motto}<br><br>
-                <strong>入坑时间：</strong>${member.joinDate}
+                <strong>个人简介：</strong>${member.motto}<br><br>
+                <strong>入群时间：</strong>${HOUSE_INFO.createDate}
             </div>
             ${feed.length > 0 ? `<div class="member-detail-posts"><h4>📝 ${member.name}的动态</h4>${feed.slice(0, 5).map(post => createFeedCard(post, true)).join('')}</div>` : ''}
         </div>

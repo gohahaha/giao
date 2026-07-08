@@ -10,18 +10,18 @@ if (isSupabaseConfigured && window.supabase) {
 
 // ==================== 成员数据（真实姓名+生日） ====================
 const MEMBERS = [
-    { id: 1, name: '杨婷',   birthday: '0107', account: '20260107', role: '管理员', title: '小屋管家',     desc: '细心体贴的大姐姐，把小屋打理得井井有条', joinDate: '2024-01-01', motto: '生活的美好在于每一天的陪伴' },
-    { id: 2, name: '蒋旗',   birthday: '0209', account: '20260209', role: '成员',   title: '气氛担当',     desc: '有蒋旗在的地方就有欢笑和段子', joinDate: '2024-01-01', motto: '快乐就是和你们在一起' },
-    { id: 3, name: '刘雯静', birthday: '0317', account: '20260317', role: '成员',   title: '美食雷达',     desc: '永远在发现好吃的路上，群里吃货代表', joinDate: '2024-01-01', motto: '没有什么是一顿美食解决不了的' },
-    { id: 4, name: '陈利勇', birthday: '0507', account: '20260507', role: '成员',   title: '技术达人',     desc: '电脑问题找他准没错，靠谱的技术担当', joinDate: '2024-01-01', motto: '办法总比困难多' },
-    { id: 5, name: '李璨江', birthday: '0518', account: '20260518', role: '群主',   title: '群主·小屋创始人', desc: '米奇giaogiao屋的灵魂人物，把大家都聚在一起', joinDate: '2024-01-01', motto: '有你们在，每天都是好日子' },
-    { id: 6, name: '王一平', birthday: '0702', account: '20260702', role: '成员',   title: '摄影大师',     desc: '朋友圈摄影师，记录生活中的每一个美好瞬间', joinDate: '2024-01-01', motto: '生活需要仪式感' },
-    { id: 7, name: '夏涛',   birthday: '0723', account: '20260723', role: '成员',   title: '运动健将',     desc: '篮球游泳样样行，永远活力满满', joinDate: '2024-01-01', motto: '生命在于运动' },
-    { id: 8, name: '简诗语', birthday: '0727', account: '20260727', role: '成员',   title: '文艺青年',     desc: '喜欢读书写诗，用文字温暖每个人的心', joinDate: '2024-01-01', motto: '诗意地栖居在这片大地上' },
-    { id: 9, name: '吕鹏',   birthday: '0826', account: '20260826', role: '成员',   title: '深夜陪伴',     desc: '夜晚最活跃的那个人，失眠患者互助协会会长', joinDate: '2024-01-01', motto: '晚安是最好的情话' },
-    { id: 10, name: '蒋志星', birthday: '1013', account: '20261013', role: '成员',  title: '治愈担当',     desc: '温柔细心，总能察觉到谁不开心并送上安慰', joinDate: '2024-01-01', motto: '抱抱你，一切都会好的' },
-    { id: 11, name: '吕楚钰', birthday: '1104', account: '20261104', role: '成员',  title: '可爱担当',     desc: '元气满满，像小太阳一样温暖着每一个人', joinDate: '2024-01-01', motto: '每天都元气满满' },
-    { id: 12, name: '吕佳怡', birthday: '1114', account: '20261114', role: '成员',  title: '自由灵魂',     desc: '随性洒脱，说走就走的旅行达人', joinDate: '2024-01-01', motto: '生活不止眼前的苟且' }
+    { id: 1, name: '杨婷',   birthday: '0107', account: '20260107', role: '管理员', title: '小屋管家',     motto: '生活的美好在于每一天的陪伴' },
+    { id: 2, name: '蒋旗',   birthday: '0209', account: '20260209', role: '成员',   title: '气氛担当',     motto: '快乐就是和你们在一起' },
+    { id: 3, name: '刘雯静', birthday: '0317', account: '20260317', role: '成员',   title: '美食雷达',     motto: '没有什么是一顿美食解决不了的' },
+    { id: 4, name: '陈利勇', birthday: '0507', account: '20260507', role: '成员',   title: '技术达人',     motto: '办法总比困难多' },
+    { id: 5, name: '李璨江', birthday: '0518', account: '20260518', role: '群主',   title: '群主·小屋创始人', motto: '有你们在，每天都是好日子' },
+    { id: 6, name: '王一平', birthday: '0702', account: '20260702', role: '成员',   title: '摄影大师',     motto: '生活需要仪式感' },
+    { id: 7, name: '夏涛',   birthday: '0723', account: '20260723', role: '成员',   title: '运动健将',     motto: '生命在于运动' },
+    { id: 8, name: '简诗语', birthday: '0727', account: '20260727', role: '成员',   title: '文艺青年',     motto: '诗意地栖居在这片大地上' },
+    { id: 9, name: '吕鹏',   birthday: '0826', account: '20260826', role: '成员',   title: '深夜陪伴',     motto: '晚安是最好的情话' },
+    { id: 10, name: '蒋志星', birthday: '1013', account: '20261013', role: '成员',  title: '治愈担当',     motto: '抱抱你，一切都会好的' },
+    { id: 11, name: '吕楚钰', birthday: '1104', account: '20261104', role: '成员',  title: '可爱担当',     motto: '每天都元气满满' },
+    { id: 12, name: '吕佳怡', birthday: '1114', account: '20261114', role: '成员',  title: '自由灵魂',     motto: '生活不止眼前的苟且' }
 ];
 
 const MEMBER_COLORS = ['#E8734A','#3B82F6','#10B981','#8B5CF6','#C41E3A','#F59E0B','#06B6D4','#EC4899','#6366F1','#14B8A6','#F97316','#84CC16'];
@@ -39,8 +39,22 @@ function verifyLogin(memberId, password) {
 
 // ==================== 头像生成 ====================
 function getMemberAvatarHTML(member) {
+    const customAvatar = dataStore.getCustomAvatar(member.id);
+    if (customAvatar) {
+        // 如果是 emoji（长度 ≤ 4 且不含 /），显示为 emoji 头像
+        if (customAvatar.length <= 4 && !customAvatar.includes('/') && !customAvatar.includes('.')) {
+            return `<span class="name-avatar custom-emoji-avatar">${customAvatar}</span>`;
+        }
+        // 否则当作图片 URL
+        return `<span class="name-avatar" style="background-image:url(${customAvatar});background-size:cover;background-position:center"><span style="opacity:0">${member.name.charAt(0)}</span></span>`;
+    }
     const color = MEMBER_COLORS[(member.id - 1) % MEMBER_COLORS.length];
     return `<span class="name-avatar" style="background-color:${color}">${member.name.charAt(0)}</span>`;
+}
+
+// 获取成员的当前显示签名（自定义优先，否则用默认 motto）
+function getMemberDisplayMotto(member) {
+    return dataStore.getCustomMotto(member.id) || member.motto;
 }
 
 // ==================== 数据操作类（localStorage 优先，Supabase 后台同步）====================
@@ -169,13 +183,13 @@ class DataStore {
         return data.map(m => ({ id:m.id, authorId:m.author_id, content:m.content, time:new Date(m.created_at).getTime() }));
     }
     async _addFeedCloud(post) {
-        await supabaseClient.from('posts').insert({ author_id: post.authorId, content: post.content, images: post.images||[] }).abortSignal(AbortSignal.timeout(5000));
+        await supabaseClient.from('posts').insert({ id: post.id, author_id: post.authorId, content: post.content, images: post.images||[], created_at: new Date(post.time).toISOString() }).abortSignal(AbortSignal.timeout(5000));
     }
     async _addBoardCloud(msg) {
-        await supabaseClient.from('messages').insert({ author_id: msg.authorId, content: msg.content }).abortSignal(AbortSignal.timeout(5000));
+        await supabaseClient.from('messages').insert({ id: msg.id, author_id: msg.authorId, content: msg.content, created_at: new Date(msg.time).toISOString() }).abortSignal(AbortSignal.timeout(5000));
     }
     async _addAlbumPhotoCloud(photo) {
-        await supabaseClient.from('photos').insert({ author_id: photo.authorId, category: photo.category, description: photo.desc||'', image_url: photo.image }).abortSignal(AbortSignal.timeout(5000));
+        await supabaseClient.from('photos').insert({ id: photo.id, author_id: photo.authorId, category: photo.category, description: photo.desc||'', image_url: photo.image, created_at: new Date(photo.time).toISOString() }).abortSignal(AbortSignal.timeout(5000));
     }
     async _likeFeedCloud(feedId, authorId) {
         const { data: ex } = await supabaseClient.from('likes').select('*').eq('post_id', feedId).eq('author_id', authorId).maybeSingle().abortSignal(AbortSignal.timeout(5000));
@@ -183,7 +197,7 @@ class DataStore {
         else await supabaseClient.from('likes').insert({ post_id: feedId, author_id: authorId }).abortSignal(AbortSignal.timeout(5000));
     }
     async _addCommentCloud(feedId, comment) {
-        await supabaseClient.from('comments').insert({ post_id: feedId, author_id: comment.authorId, content: comment.content }).abortSignal(AbortSignal.timeout(5000));
+        await supabaseClient.from('comments').insert({ post_id: feedId, author_id: comment.authorId, content: comment.content, created_at: new Date(comment.time).toISOString() }).abortSignal(AbortSignal.timeout(5000));
     }
     async _deleteFeedCloud(feedId, authorId) {
         await supabaseClient.from('posts').delete().eq('id', feedId).eq('author_id', authorId).abortSignal(AbortSignal.timeout(5000));
@@ -245,6 +259,14 @@ class DataStore {
     addLocalBoard(msg) { const b = this.getLocalBoard(); msg.id = Date.now(); msg.time = Date.now(); b.unshift(msg); localStorage.setItem('house_board', JSON.stringify(b)); return msg; }
     deleteLocalBoard(boardId, authorId) { const b = this.getLocalBoard().filter(x=>!(x.id===boardId&&x.authorId===authorId)); localStorage.setItem('house_board', JSON.stringify(b)); }
     updateLocalBoard(boardId, authorId, newContent) { const b = this.getLocalBoard(); const m = b.find(x=>x.id===boardId&&x.authorId===authorId); if(m){ m.content=newContent; localStorage.setItem('house_board',JSON.stringify(b)); return true; } return false; }
+
+    // ==================== 自定义头像 & 签名 ====================
+    getAllCustomAvatars() { try { return JSON.parse(localStorage.getItem('house_avatars')||'{}'); } catch { return {}; } }
+    getCustomAvatar(memberId) { const avatars = this.getAllCustomAvatars(); return avatars[memberId] || null; }
+    saveCustomAvatar(memberId, avatar) { const avatars = this.getAllCustomAvatars(); avatars[memberId] = avatar; localStorage.setItem('house_avatars', JSON.stringify(avatars)); }
+    getAllCustomMottos() { try { return JSON.parse(localStorage.getItem('house_mottos')||'{}'); } catch { return {}; } }
+    getCustomMotto(memberId) { const mottos = this.getAllCustomMottos(); return mottos[memberId] || null; }
+    saveCustomMotto(memberId, motto) { const mottos = this.getAllCustomMottos(); mottos[memberId] = motto; localStorage.setItem('house_mottos', JSON.stringify(mottos)); }
 
 }
 
