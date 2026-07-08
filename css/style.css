@@ -1039,9 +1039,13 @@ body {
 }
 
 .member-title {
-    font-size: 0.85rem;
-    color: var(--accent);
+    display: inline-block;
+    font-size: 0.75rem;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 12px;
     margin-bottom: var(--space-sm);
+    font-weight: 500;
 }
 
 .member-desc {
@@ -1814,9 +1818,13 @@ textarea:focus {
 }
 
 .member-detail-title {
-    color: var(--accent);
-    font-size: 0.95rem;
+    display: inline-block;
+    color: #fff;
+    font-size: 0.85rem;
+    padding: 3px 14px;
+    border-radius: 14px;
     margin-bottom: var(--space-md);
+    font-weight: 500;
 }
 
 .member-detail-info {

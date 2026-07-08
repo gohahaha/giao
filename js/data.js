@@ -57,6 +57,16 @@ function getMemberDisplayMotto(member) {
     return dataStore.getCustomMotto(member.id) || member.motto;
 }
 
+// 获取成员的当前显示标签（自定义优先，否则用默认 title）
+function getMemberDisplayTitle(member) {
+    return dataStore.getCustomTitle(member.id) || member.title;
+}
+
+// 获取成员的标签颜色（自定义优先，否则用默认成员色）
+function getMemberTitleColor(member) {
+    return dataStore.getCustomTitleColor(member.id) || MEMBER_COLORS[(member.id - 1) % MEMBER_COLORS.length];
+}
+
 // ==================== 数据操作类（localStorage 优先，Supabase 后台同步）====================
 class DataStore {
     constructor() {
@@ -75,6 +85,8 @@ class DataStore {
             localStorage.removeItem('house_board');
             localStorage.removeItem('house_avatars');
             localStorage.removeItem('house_mottos');
+            localStorage.removeItem('house_titles');
+            localStorage.removeItem('house_title_colors');
             localStorage.setItem('house_v5_final_cleanup', 'true');
         }
     }
@@ -274,13 +286,19 @@ class DataStore {
     deleteLocalBoard(boardId, authorId) { const b = this.getLocalBoard().filter(x=>!(x.id===boardId&&x.authorId===authorId)); localStorage.setItem('house_board', JSON.stringify(b)); }
     updateLocalBoard(boardId, authorId, newContent) { const b = this.getLocalBoard(); const m = b.find(x=>x.id===boardId&&x.authorId===authorId); if(m){ m.content=newContent; localStorage.setItem('house_board',JSON.stringify(b)); return true; } return false; }
 
-    // ==================== 自定义头像 & 签名 ====================
+    // ==================== 自定义头像 & 签名 & 标签 ====================
     getAllCustomAvatars() { try { return JSON.parse(localStorage.getItem('house_avatars')||'{}'); } catch { return {}; } }
     getCustomAvatar(memberId) { const avatars = this.getAllCustomAvatars(); return avatars[memberId] || null; }
     saveCustomAvatar(memberId, avatar) { const avatars = this.getAllCustomAvatars(); avatars[memberId] = avatar; localStorage.setItem('house_avatars', JSON.stringify(avatars)); }
     getAllCustomMottos() { try { return JSON.parse(localStorage.getItem('house_mottos')||'{}'); } catch { return {}; } }
     getCustomMotto(memberId) { const mottos = this.getAllCustomMottos(); return mottos[memberId] || null; }
     saveCustomMotto(memberId, motto) { const mottos = this.getAllCustomMottos(); mottos[memberId] = motto; localStorage.setItem('house_mottos', JSON.stringify(mottos)); }
+    getAllCustomTitles() { try { return JSON.parse(localStorage.getItem('house_titles')||'{}'); } catch { return {}; } }
+    getCustomTitle(memberId) { const titles = this.getAllCustomTitles(); return titles[memberId] || null; }
+    saveCustomTitle(memberId, title) { const titles = this.getAllCustomTitles(); titles[memberId] = title; localStorage.setItem('house_titles', JSON.stringify(titles)); }
+    getAllCustomTitleColors() { try { return JSON.parse(localStorage.getItem('house_title_colors')||'{}'); } catch { return {}; } }
+    getCustomTitleColor(memberId) { const colors = this.getAllCustomTitleColors(); return colors[memberId] || null; }
+    saveCustomTitleColor(memberId, color) { const colors = this.getAllCustomTitleColors(); colors[memberId] = color; localStorage.setItem('house_title_colors', JSON.stringify(colors)); }
 
 }
 

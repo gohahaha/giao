@@ -385,6 +385,13 @@ function rebuildModals() {
                         </div>
                     </div>
                     <div class="edit-profile-section">
+                        <label for="editTitle">🏷️ 个人标签</label>
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" id="editTitle" placeholder="你的标签..." maxlength="12" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;">
+                            <input type="color" id="editTitleColor" title="标签颜色" style="width:44px;height:44px;border:2px solid #ddd;border-radius:8px;cursor:pointer;padding:2px;">
+                        </div>
+                    </div>
+                    <div class="edit-profile-section">
                         <label for="editMotto">💬 个性签名</label>
                         <input type="text" id="editMotto" placeholder="写一句你的个性签名..." maxlength="50" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;">
                     </div>
@@ -449,6 +456,11 @@ let pendingAvatar = null;
 
 function openEditProfileModal() {
     const member = getMember(currentMemberId);
+    // 预填标签
+    const titleEl = document.getElementById('editTitle');
+    if (titleEl) titleEl.value = getMemberDisplayTitle(member);
+    const colorEl = document.getElementById('editTitleColor');
+    if (colorEl) colorEl.value = getMemberTitleColor(member);
     // 预填签名
     const mottoEl = document.getElementById('editMotto');
     if (mottoEl) mottoEl.value = getMemberDisplayMotto(member);
@@ -507,19 +519,41 @@ function resetAvatarToDefault() {
 }
 
 async function saveProfile() {
+    const member = getMember(currentMemberId);
     const mottoEl = document.getElementById('editMotto');
     const newMotto = mottoEl ? mottoEl.value.trim() : '';
+
+    const titleEl = document.getElementById('editTitle');
+    const newTitle = titleEl ? titleEl.value.trim() : '';
+    const colorEl = document.getElementById('editTitleColor');
+    const newColor = colorEl ? colorEl.value : '';
+
     // 保存头像
     if (pendingAvatar) {
         dataStore.saveCustomAvatar(currentMemberId, pendingAvatar);
     } else {
-        // 删除自定义头像恢复默认
         const avatars = dataStore.getAllCustomAvatars();
         delete avatars[currentMemberId];
         localStorage.setItem('house_avatars', JSON.stringify(avatars));
     }
+    // 保存标签
+    if (newTitle && newTitle !== member.title) {
+        dataStore.saveCustomTitle(currentMemberId, newTitle);
+    } else if (!newTitle || newTitle === member.title) {
+        const titles = dataStore.getAllCustomTitles();
+        delete titles[currentMemberId];
+        localStorage.setItem('house_titles', JSON.stringify(titles));
+    }
+    // 保存标签颜色
+    if (newColor && newColor !== MEMBER_COLORS[(member.id - 1) % MEMBER_COLORS.length]) {
+        dataStore.saveCustomTitleColor(currentMemberId, newColor);
+    } else {
+        const colors = dataStore.getAllCustomTitleColors();
+        delete colors[currentMemberId];
+        localStorage.setItem('house_title_colors', JSON.stringify(colors));
+    }
     // 保存签名
-    if (newMotto && newMotto !== getMember(currentMemberId).motto) {
+    if (newMotto && newMotto !== member.motto) {
         dataStore.saveCustomMotto(currentMemberId, newMotto);
     } else {
         const mottos = dataStore.getAllCustomMottos();
@@ -768,7 +802,7 @@ function createMemberCard(member) {
         <div class="member-card" onclick="openMemberDetail(${member.id})">
             <div class="member-avatar-name">${getMemberAvatarHTML(member)}</div>
             <div class="member-name">${member.name}</div>
-            <div class="member-title">${member.title}</div>
+            <div class="member-title" style="background-color:${getMemberTitleColor(member)}">${getMemberDisplayTitle(member)}</div>
             <div class="member-desc">${getMemberDisplayMotto(member)}</div>
             <div class="member-join">🎂 ${member.birthday.slice(0,2)}月${member.birthday.slice(2,4)}日</div>
         </div>
@@ -1067,7 +1101,7 @@ async function openMemberDetail(memberId) {
             <div class="member-detail-avatar-name">${getMemberAvatarHTML(member)}</div>
             <div class="member-detail-name">${member.name}</div>
             <div class="member-detail-role">${member.role}</div>
-            <div class="member-detail-title">${member.title}</div>
+            <div class="member-detail-title" style="background-color:${getMemberTitleColor(member)}">${getMemberDisplayTitle(member)}</div>
             <div class="member-detail-info">
                 <div class="member-stat">
                     <div class="member-stat-value">${feed.length}</div>
