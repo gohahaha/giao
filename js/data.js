@@ -212,22 +212,52 @@ class DataStore {
     addLocalChatMsgDirect(msg) { const c = this.getLocalChat(); c.push(msg); localStorage.setItem('house_chat', JSON.stringify(c)); }
     deleteLocalChatMsg(msgId, authorId) { const c = this.getLocalChat().filter(x=>!(x.id===msgId&&x.authorId===authorId)); localStorage.setItem('house_chat', JSON.stringify(c)); }
 
-    // 数据读取：云端优先（如果通），否则本地
+    // 数据读取：云端+本地合并（本地评论/点赞优先，避免刚提交的内容"消失"）
     async getFeed() {
         if (this.cloudOk) {
-            try { const r = await this._getFeedCloud(); if (r.length > 0) return r; } catch(e){}
+            try {
+                const cloud = await this._getFeedCloud();
+                const local = this.getLocalFeed();
+                if (cloud.length > 0) {
+                    // 合并：本地数据中更新鲜的评论/点赞覆盖云端数据
+                    return cloud.map(cp => {
+                        const lp = local.find(l => l.id === cp.id);
+                        if (lp && (lp.comments.length > cp.comments.length || lp.likes.length > cp.likes.length)) {
+                            return { ...cp, comments: lp.comments, likes: lp.likes };
+                        }
+                        return cp;
+                    });
+                }
+            } catch(e){}
         }
         return this.getLocalFeed();
     }
     async getAlbum() {
         if (this.cloudOk) {
-            try { const r = await this._getAlbumCloud(); if (r.length > 0) return r; } catch(e){}
+            try {
+                const cloud = await this._getAlbumCloud();
+                const local = this.getLocalAlbum();
+                if (cloud.length > 0) {
+                    // 合并：本地新上传的照片也显示
+                    const cloudIds = new Set(cloud.map(c => c.id));
+                    const localNotInCloud = local.filter(l => !cloudIds.has(l.id));
+                    return [...localNotInCloud, ...cloud];
+                }
+            } catch(e){}
         }
         return this.getLocalAlbum();
     }
     async getBoard() {
         if (this.cloudOk) {
-            try { const r = await this._getBoardCloud(); if (r.length > 0) return r; } catch(e){}
+            try {
+                const cloud = await this._getBoardCloud();
+                const local = this.getLocalBoard();
+                if (cloud.length > 0) {
+                    const cloudIds = new Set(cloud.map(c => c.id));
+                    const localNotInCloud = local.filter(l => !cloudIds.has(l.id));
+                    return [...localNotInCloud, ...cloud];
+                }
+            } catch(e){}
         }
         return this.getLocalBoard();
     }
