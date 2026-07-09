@@ -2,22 +2,73 @@
 
 let chatMessages = [];
 let chatUnreadCount = 0;
+let chatPollTimer = null;
+let chatLastCloudId = null; // 记录云端最新消息ID，用于轮询增量拉取
 const CHAT_PAGE_SIZE = 50;
 
 // 初始化聊天（登录后调用）
 function initChat() {
-    // 订阅实时消息
+    // 1. 订阅 Supabase Realtime 实时消息
     dataStore.subscribeToChat((newMsg) => {
-        // 实时收到新消息
-        chatMessages.push(newMsg);
-        if (currentSection === 'chat') {
-            appendChatMessage(newMsg);
-            scrollChatToBottom();
-        } else {
-            chatUnreadCount++;
-            updateChatUnreadBadge();
-        }
+        onNewRemoteMessage(newMsg);
     });
+
+    // 2. 启动轮询兜底（每3秒拉一次，保证离线/丢消息时也能同步）
+    startChatPolling();
+}
+
+// 处理新消息（来自 Realtime 或轮询）
+function onNewRemoteMessage(newMsg) {
+    // 去重
+    if (chatMessages.find(m => m.id === newMsg.id)) return;
+
+    chatMessages.push(newMsg);
+    chatLastCloudId = newMsg.id;
+
+    if (currentSection === 'home') {
+        appendChatMessage(newMsg);
+        scrollChatToBottom();
+    } else {
+        chatUnreadCount++;
+        updateChatUnreadBadge();
+    }
+}
+
+// 轮询拉取云端新消息
+function startChatPolling() {
+    if (chatPollTimer) clearInterval(chatPollTimer);
+    chatPollTimer = setInterval(async () => {
+        try {
+            const cloudMsgs = await dataStore._getChatCloud();
+            if (!cloudMsgs || cloudMsgs.length === 0) return;
+
+            // 找出本地没有的新消息
+            const localIds = new Set(chatMessages.map(m => m.id));
+            const newOnes = cloudMsgs.filter(m => !localIds.has(m.id));
+
+            if (newOnes.length > 0) {
+                console.log('📡 轮询发现', newOnes.length, '条新消息');
+                // 同步到本地存储
+                newOnes.forEach(m => {
+                    if (!localIds.has(m.id)) {
+                        dataStore.addLocalChatMsgDirect(m);
+                    }
+                });
+                // 刷新界面
+                await refreshChatMessages();
+            }
+        } catch(e) {
+            // 云端不可达，静默跳过
+        }
+    }, 3000);
+}
+
+// 停止轮询
+function stopChatPolling() {
+    if (chatPollTimer) {
+        clearInterval(chatPollTimer);
+        chatPollTimer = null;
+    }
 }
 
 // 加载聊以室
@@ -36,20 +87,58 @@ async function loadChat() {
         if (emptyHint) emptyHint.style.display = 'flex';
     } else {
         if (emptyHint) emptyHint.style.display = 'none';
-        // 只渲染最近的消息
         const recent = chatMessages.slice(-CHAT_PAGE_SIZE);
         msgContainer.innerHTML = recent.map(msg => createChatBubble(msg)).join('');
-        // 如果有更多历史消息
         if (chatMessages.length > CHAT_PAGE_SIZE) {
             const loadMore = document.createElement('div');
             loadMore.className = 'chat-load-more';
             loadMore.innerHTML = `<button class="btn-secondary" onclick="loadMoreChatHistory()">📜 加载更多历史消息 (${chatMessages.length - CHAT_PAGE_SIZE}条)</button>`;
             msgContainer.prepend(loadMore);
         }
+        chatLastCloudId = chatMessages[chatMessages.length - 1]?.id || null;
     }
 
     scrollChatToBottom(false);
     document.getElementById('chatInput')?.focus();
+}
+
+// 刷新聊天消息（轮询发现新消息后调用）
+async function refreshChatMessages() {
+    chatMessages = await dataStore.getChat();
+    const msgContainer = document.getElementById('chatMessages');
+    const emptyHint = document.getElementById('chatEmpty');
+    if (!msgContainer) return;
+
+    // 检查是否在首页
+    if (currentSection !== 'home') {
+        chatUnreadCount++;
+        updateChatUnreadBadge();
+        return;
+    }
+
+    if (chatMessages.length === 0) {
+        msgContainer.innerHTML = '';
+        if (emptyHint) emptyHint.style.display = 'flex';
+        return;
+    }
+
+    if (emptyHint) emptyHint.style.display = 'none';
+
+    // 只更新新增的消息（不重绘整个列表）
+    const existingIds = new Set(
+        Array.from(msgContainer.querySelectorAll('.chat-message[data-id]'))
+            .map(el => parseInt(el.getAttribute('data-id')))
+    );
+    const newMsgs = chatMessages.filter(m => !existingIds.has(m.id));
+
+    if (newMsgs.length > 0) {
+        // 移除加载更多按钮
+        const loadMore = msgContainer.querySelector('.chat-load-more');
+        if (loadMore) loadMore.remove();
+
+        newMsgs.forEach(m => appendChatMessage(m));
+        scrollChatToBottom();
+    }
 }
 
 // 加载更多历史消息
@@ -111,7 +200,6 @@ function appendChatMessage(msg) {
 
     if (emptyHint) emptyHint.style.display = 'none';
 
-    // 移除加载更多按钮
     const loadMore = msgContainer.querySelector('.chat-load-more');
     if (loadMore) loadMore.remove();
 
@@ -126,6 +214,9 @@ async function sendChatMessage() {
     const content = input.value.trim();
     if (!content) return;
 
+    input.value = '';
+    input.focus();
+
     // 乐观更新：立即显示
     const tempMsg = {
         id: Date.now(),
@@ -137,11 +228,10 @@ async function sendChatMessage() {
     chatMessages.push(tempMsg);
     appendChatMessage(tempMsg);
     scrollChatToBottom();
-    input.value = '';
-    input.focus();
 
-    // 保存到 dataStore（本地 + 云端后台同步）
-    await dataStore.addChatMessage(tempMsg);
+    // 保存到 dataStore（本地保存 + 云端同步）
+    const saved = await dataStore.addChatMessage(tempMsg);
+    console.log('📤 消息已发送, 云端同步:', dataStore.cloudOk ? '尝试中' : '离线模式');
 }
 
 // 删除消息
@@ -150,10 +240,8 @@ async function deleteChatMsg(msgId) {
 
     await dataStore.deleteChatMessage(msgId, currentMemberId);
 
-    // 从本地数组移除
     chatMessages = chatMessages.filter(m => m.id !== msgId);
 
-    // 重新渲染
     const msgContainer = document.getElementById('chatMessages');
     const emptyHint = document.getElementById('chatEmpty');
     if (!msgContainer) return;

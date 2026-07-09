@@ -199,7 +199,8 @@ class DataStore {
         return data.map(m => ({ id: m.id, authorId: m.author_id, content: m.content, time: new Date(m.created_at).getTime() })).reverse();
     }
     async _addChatMessageCloud(msg) {
-        await supabaseClient.from('chat_messages').insert({ id: msg.id, author_id: msg.authorId, content: msg.content, created_at: new Date(msg.time).toISOString() }).abortSignal(AbortSignal.timeout(5000));
+        const { error } = await supabaseClient.from('chat_messages').insert({ id: msg.id, author_id: msg.authorId, content: msg.content, created_at: new Date(msg.time).toISOString() }).abortSignal(AbortSignal.timeout(5000));
+        if (error) console.error('❌ 聊天消息云端同步失败:', error.message, '(需在Supabase创建chat_messages表)');
     }
     async _deleteChatMessageCloud(msgId, authorId) {
         await supabaseClient.from('chat_messages').delete().eq('id', msgId).eq('author_id', authorId).abortSignal(AbortSignal.timeout(5000));
