@@ -133,6 +133,9 @@ async function onUserLoggedIn() {
     const authContainer = document.getElementById('authContainer');
     if (authContainer) authContainer.remove();
 
+    // 初始化聊以室实时消息
+    initChat();
+
     // 初始化实时消息订阅（像朋友圈一样即时刷新）
     dataStore.subscribeToChanges((section) => {
         // 静默刷新当前页面数据
@@ -229,6 +232,27 @@ function rebuildMainContent() {
             <div class="section-container">
                 <div class="section-header"><h2>📝 小屋碎碎念</h2><button class="btn-primary" onclick="openBoardModal()">✏️ 写留言</button></div>
                 <div class="board-list" id="boardList"></div>
+            </div>
+        </section>
+
+        <!-- ==================== 聊以室 ==================== -->
+        <section id="chat" class="section">
+            <div class="chat-container">
+                <div class="chat-header-bar">
+                    <h2>💬 聊以室</h2>
+                    <span class="chat-online-hint" id="chatOnlineHint">🟢 实时聊天中</span>
+                </div>
+                <div class="chat-room" id="chatRoom">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-empty" id="chatEmpty">
+                        <div class="empty-state-icon">💬</div>
+                        <div class="empty-state-text">还没有消息，来说第一句话吧～</div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="输入消息，按 Enter 发送..." maxlength="500" autocomplete="off">
+                    <button class="btn-primary" id="chatSendBtn" onclick="sendChatMessage()">发送</button>
+                </div>
             </div>
         </section>
 
@@ -644,6 +668,7 @@ async function loadSectionData(section) {
         case 'members': await loadMembers(); break;
         case 'timeline': await loadTimeline(); break;
         case 'board': await loadBoard(); break;
+        case 'chat': await loadChat(); break;
         case 'about': await loadAbout(); break;
     }
 }

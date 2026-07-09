@@ -142,6 +142,75 @@ class DataStore {
         }
     }
 
+    // ==================== 聊以室 ====================
+    async getChat() {
+        if (this.cloudOk) {
+            try { const r = await this._getChatCloud(); if (r.length > 0) return r; } catch(e){}
+        }
+        return this.getLocalChat();
+    }
+    async addChatMessage(msg) {
+        const result = this.addLocalChatMsg(msg);
+        if (this.cloudOk) this._addChatMessageCloud(msg).catch(()=>{});
+        return result;
+    }
+    async deleteChatMessage(msgId, authorId) {
+        this.deleteLocalChatMsg(msgId, authorId);
+        if (this.cloudOk) this._deleteChatMessageCloud(msgId, authorId).catch(()=>{});
+    }
+
+    // 聊以室实时订阅（仅 INSERT）
+    subscribeToChat(onNewMessage) {
+        if (!this.useCloud || !supabaseClient) return;
+        this._chatChannel = supabaseClient
+            .channel('realtime-chat')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
+                console.log('💬 新聊天消息:', payload.new);
+                const msg = {
+                    id: payload.new.id,
+                    authorId: payload.new.author_id,
+                    content: payload.new.content,
+                    time: new Date(payload.new.created_at).getTime()
+                };
+                // 避免重复（如果是自己发的，本地已有了）
+                const local = this.getLocalChat();
+                if (!local.find(m => m.id === msg.id)) {
+                    this.addLocalChatMsgDirect(msg);
+                    onNewMessage(msg);
+                }
+            })
+            .subscribe((status) => {
+                if (status === 'SUBSCRIBED') console.log('🔔 聊以室实时消息已开启');
+                else console.log('📡 聊以室状态:', status);
+            });
+    }
+
+    unsubscribeChat() {
+        if (this._chatChannel) {
+            supabaseClient.removeChannel(this._chatChannel);
+            this._chatChannel = null;
+        }
+    }
+
+    // 云端实现
+    async _getChatCloud() {
+        const { data, error } = await supabaseClient.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(100).abortSignal(AbortSignal.timeout(5000));
+        if (error || !data) return [];
+        return data.map(m => ({ id: m.id, authorId: m.author_id, content: m.content, time: new Date(m.created_at).getTime() })).reverse();
+    }
+    async _addChatMessageCloud(msg) {
+        await supabaseClient.from('chat_messages').insert({ id: msg.id, author_id: msg.authorId, content: msg.content, created_at: new Date(msg.time).toISOString() }).abortSignal(AbortSignal.timeout(5000));
+    }
+    async _deleteChatMessageCloud(msgId, authorId) {
+        await supabaseClient.from('chat_messages').delete().eq('id', msgId).eq('author_id', authorId).abortSignal(AbortSignal.timeout(5000));
+    }
+
+    // 本地实现
+    getLocalChat() { try { return JSON.parse(localStorage.getItem('house_chat')||'[]'); } catch { return []; } }
+    addLocalChatMsg(msg) { const c = this.getLocalChat(); msg.id = Date.now(); msg.time = Date.now(); c.push(msg); localStorage.setItem('house_chat', JSON.stringify(c)); return msg; }
+    addLocalChatMsgDirect(msg) { const c = this.getLocalChat(); c.push(msg); localStorage.setItem('house_chat', JSON.stringify(c)); }
+    deleteLocalChatMsg(msgId, authorId) { const c = this.getLocalChat().filter(x=>!(x.id===msgId&&x.authorId===authorId)); localStorage.setItem('house_chat', JSON.stringify(c)); }
+
     // 数据读取：云端优先（如果通），否则本地
     async getFeed() {
         if (this.cloudOk) {
