@@ -172,6 +172,22 @@ function rebuildMainContent() {
                 </div>
             </div>
 
+            <!-- 聊以室 - 实时聊天 -->
+            <div class="section-container">
+                <div class="section-header"><h2>💬 聊以室</h2><span class="chat-online-hint" id="chatOnlineHint">🟢 实时聊天中</span></div>
+                <div class="chat-room chat-room-home" id="chatRoom">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-empty" id="chatEmpty">
+                        <div class="empty-state-icon">💬</div>
+                        <div class="empty-state-text">还没有消息，来说第一句话吧～</div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="输入消息，按 Enter 发送..." maxlength="500" autocomplete="off">
+                    <button class="btn-primary" id="chatSendBtn" onclick="sendChatMessage()">发送</button>
+                </div>
+            </div>
+
             <div class="section-container"><div class="section-header"><h2>✨ 最新动态</h2><a href="#feed" class="see-all" onclick="showSection('feed')">查看全部 →</a></div><div class="latest-feed" id="latestFeed"></div></div>
             <div class="section-container"><div class="section-header"><h2>📸 最新照片</h2><a href="#album" class="see-all" onclick="showSection('album')">查看全部 →</a></div><div class="latest-photos" id="latestPhotos"></div></div>
             <div class="section-container"><div class="section-header"><h2>🏠 小屋家人</h2><a href="#members" class="see-all" onclick="showSection('members')">查看档案 →</a></div><div class="members-preview" id="membersPreview"></div></div>
@@ -232,27 +248,6 @@ function rebuildMainContent() {
             <div class="section-container">
                 <div class="section-header"><h2>📝 小屋碎碎念</h2><button class="btn-primary" onclick="openBoardModal()">✏️ 写留言</button></div>
                 <div class="board-list" id="boardList"></div>
-            </div>
-        </section>
-
-        <!-- ==================== 聊以室 ==================== -->
-        <section id="chat" class="section">
-            <div class="chat-container">
-                <div class="chat-header-bar">
-                    <h2>💬 聊以室</h2>
-                    <span class="chat-online-hint" id="chatOnlineHint">🟢 实时聊天中</span>
-                </div>
-                <div class="chat-room" id="chatRoom">
-                    <div class="chat-messages" id="chatMessages"></div>
-                    <div class="chat-empty" id="chatEmpty">
-                        <div class="empty-state-icon">💬</div>
-                        <div class="empty-state-text">还没有消息，来说第一句话吧～</div>
-                    </div>
-                </div>
-                <div class="chat-input-area">
-                    <input type="text" id="chatInput" placeholder="输入消息，按 Enter 发送..." maxlength="500" autocomplete="off">
-                    <button class="btn-primary" id="chatSendBtn" onclick="sendChatMessage()">发送</button>
-                </div>
             </div>
         </section>
 
@@ -668,7 +663,6 @@ async function loadSectionData(section) {
         case 'members': await loadMembers(); break;
         case 'timeline': await loadTimeline(); break;
         case 'board': await loadBoard(); break;
-        case 'chat': await loadChat(); break;
         case 'about': await loadAbout(); break;
     }
 }
@@ -684,7 +678,8 @@ async function loadHomePage() {
         loadLatestFeed(),
         loadLatestPhotos(),
         loadMembersPreview(),
-        loadBoardPreview()
+        loadBoardPreview(),
+        loadChat()
     ]);
 }
 

@@ -191,7 +191,7 @@ function scrollChatToBottom(smooth = true) {
 
 // 更新未读角标
 function updateChatUnreadBadge() {
-    const navLinks = document.querySelectorAll('.nav-link[data-section="chat"]');
+    const navLinks = document.querySelectorAll('.nav-link[data-section="home"]');
     navLinks.forEach(link => {
         if (chatUnreadCount > 0) {
             link.setAttribute('data-badge', chatUnreadCount > 99 ? '99+' : chatUnreadCount);
